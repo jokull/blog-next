@@ -1,0 +1,1 @@
+ALTER TABLE `post` ADD `locale` text DEFAULT 'en' NOT NULL;

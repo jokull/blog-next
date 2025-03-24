@@ -1,0 +1,1 @@
+ALTER TABLE `post` ADD `public_at` integer;
