@@ -8,7 +8,7 @@ import { notFound } from "next/navigation";
 import * as runtime from "react/jsx-runtime";
 
 // This enables static rendering
-export const dynamic = "force-static";
+// export const dynamic = "force-static";
 
 // Generate all possible slug values at build time
 export async function generateStaticParams() {

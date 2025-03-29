@@ -1,5 +1,5 @@
 {
-  "name": "shud.in",
+  "name": "blog",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -21,7 +21,6 @@
     "@shikijs/rehype": "^3.2.1",
     "@t3-oss/env-nextjs": "^0.12.0",
     "@tailwindcss/postcss": "4.0.17",
-    "@types/mdx": "^2.0.12",
     "clsx": "^2.1.0",
     "drizzle-orm": "^0.41.0",
     "drizzle-zod": "^0.7.0",
@@ -44,6 +43,7 @@
   },
   "devDependencies": {
     "@types/js-yaml": "^4.0.9",
+    "@types/mdx": "^2.0.12",
     "@types/node": "^22.13.13",
     "@types/react": "^19.0.12",
     "@types/react-dom": "^19.0.4",
