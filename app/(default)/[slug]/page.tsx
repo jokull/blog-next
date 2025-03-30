@@ -3,7 +3,7 @@ import { db } from "@/drizzle.config";
 import { components } from "@/mdx-components";
 import { Post } from "@/schema";
 import { compile, run } from "@mdx-js/mdx";
-import { eq } from "drizzle-orm";
+import { eq, isNotNull } from "drizzle-orm";
 import { notFound } from "next/navigation";
 import * as runtime from "react/jsx-runtime";
 
@@ -16,6 +16,7 @@ export async function generateStaticParams() {
     columns: {
       slug: true,
     },
+    where: isNotNull(Post.publicAt),
   });
 
   return posts.map((post) => ({
