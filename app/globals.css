@@ -247,6 +247,15 @@ article {
   details p:first-of-type {
     margin-top: 0;
   }
+  .footnotes {
+    margin-top: 3rem;
+    border-top: 1px solid var(--color-rurikon-border);
+    font-size: 0.9rem;
+    p {
+      margin-top: 0.5rem;
+      line-height: 1.1;
+    }
+  }
 }
 
 .content-fade-out {
