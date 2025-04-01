@@ -1,3 +1,4 @@
+import { requireAuth } from "@/auth";
 import { ClientErrorBoundary } from "@/components/error-boundary";
 import { db } from "@/drizzle.config";
 import { components } from "@/mdx-components";
@@ -14,6 +15,7 @@ export default async function Page({
 }: {
   params: Promise<{ slug: string }>;
 }) {
+  await requireAuth();
   const { slug } = await params;
 
   let post = await db.query.Post.findFirst({ where: eq(Post.slug, slug) });

@@ -6,6 +6,7 @@ import { compile, run } from "@mdx-js/mdx";
 import { eq, isNotNull } from "drizzle-orm";
 import { notFound } from "next/navigation";
 import * as runtime from "react/jsx-runtime";
+import remarkGfm from "remark-gfm";
 
 // This enables static rendering
 // export const dynamic = "force-static";
@@ -41,6 +42,7 @@ export default async function Page({
     const code = String(
       await compile(post.markdown, {
         outputFormat: "function-body",
+        remarkPlugins: [remarkGfm],
       })
     );
     mdx = (
