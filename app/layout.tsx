@@ -42,12 +42,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="overflow-x-hidden touch-manipulation">
+    <html lang="en" className="touch-manipulation">
       <body
         className={cn(
           sans.variable,
           serif.variable,
           mono.variable,
+          "relative",
           "text-sm leading-6 sm:text-[15px] sm:leading-7 md:text-base md:leading-7",
           "text-rurikon-500",
           "antialiased"
