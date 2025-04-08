@@ -52,17 +52,15 @@ export default async function Page({
   }
 
   return (
-    <div className="min-h-screen mx-auto max-w-xl">
-      <Editor
-        post={post}
-        mdx={
-          Boolean(mdxError) ? (
-            mdxError
-          ) : (
-            <ClientErrorBoundary>{mdx}</ClientErrorBoundary>
-          )
-        }
-      />
-    </div>
+    <Editor
+      post={post}
+      mdx={
+        Boolean(mdxError) ? (
+          mdxError
+        ) : (
+          <ClientErrorBoundary>{mdx}</ClientErrorBoundary>
+        )
+      }
+    />
   );
 }
