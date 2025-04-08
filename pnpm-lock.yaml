@@ -35,6 +35,9 @@ importers:
       '@tailwindcss/postcss':
         specifier: 4.0.17
         version: 4.0.17
+      '@tanstack/react-pacer':
+        specifier: ^0.1.0
+        version: 0.1.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       arctic:
         specifier: ^3.6.0
         version: 3.6.0
@@ -872,6 +875,17 @@ packages:
 
   '@tailwindcss/postcss@4.0.17':
     resolution: {integrity: sha512-qeJbRTB5FMZXmuJF+eePd235EGY6IyJZF0Bh0YM6uMcCI4L9Z7dy+lPuLAhxOJzxnajsbjPoDAKOuAqZRtf1PQ==}
+
+  '@tanstack/pacer@0.1.0':
+    resolution: {integrity: sha512-QVzkGO5clvGj/qdX8H2wUj0QCXCLZ/pwPMnfSqhoYfpzDRkRHDj+3D+VzdcehBIVnE+GCd1D/P1tGMzfjmfrzQ==}
+    engines: {node: '>=18'}
+
+  '@tanstack/react-pacer@0.1.0':
+    resolution: {integrity: sha512-5I3hMy/acyKCMIG+2Qt84cHwFzKPZKDlELgaJm3wMNSI9LVRlOu+4ZumgiuXnBMuqD8X55BPrCLqPlqg1fwVyw==}
+    engines: {node: '>=18'}
+    peerDependencies:
+      react: '>=16.8'
+      react-dom: '>=16.8'
 
   '@tanstack/react-virtual@3.13.4':
     resolution: {integrity: sha512-jPWC3BXvVLHsMX67NEHpJaZ+/FySoNxFfBEiF4GBc1+/nVwdRm+UcSCYnKP3pXQr0eEsDpXi/PQZhNfJNopH0g==}
@@ -2455,6 +2469,14 @@ snapshots:
       lightningcss: 1.29.2
       postcss: 8.5.3
       tailwindcss: 4.0.17
+
+  '@tanstack/pacer@0.1.0': {}
+
+  '@tanstack/react-pacer@0.1.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0)':
+    dependencies:
+      '@tanstack/pacer': 0.1.0
+      react: 19.0.0
+      react-dom: 19.0.0(react@19.0.0)
 
   '@tanstack/react-virtual@3.13.4(react-dom@19.0.0(react@19.0.0))(react@19.0.0)':
     dependencies:

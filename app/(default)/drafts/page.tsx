@@ -1,6 +1,7 @@
+import { requireAuth } from "@/auth";
 import { db } from "@/drizzle.config";
 import { Post } from "@/schema";
-import { desc, isNotNull } from "drizzle-orm";
+import { desc, isNull } from "drizzle-orm";
 import Link from "next/link";
 import { groupBy, pipe } from "remeda";
 
@@ -9,8 +10,10 @@ export const metadata = {
 };
 
 export default async function Page() {
+  await requireAuth();
+
   const posts = await db.query.Post.findMany({
-    where: isNotNull(Post.publicAt),
+    where: isNull(Post.publicAt),
     orderBy: [desc(Post.publishedAt)],
   });
 
