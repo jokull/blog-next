@@ -21,7 +21,7 @@ export default async function Page() {
   );
 
   return (
-    <div>
+    <div className="max-w-xl">
       {Object.keys(postsByYear)
         .sort((a, b) => (b > a ? 1 : -1))
         .map((year) => (
