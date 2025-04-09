@@ -7,6 +7,7 @@ import { eq, isNotNull } from "drizzle-orm";
 import { notFound } from "next/navigation";
 import * as runtime from "react/jsx-runtime";
 import remarkGfm from "remark-gfm";
+import CopyAsMarkdown from "./_components/copy-as-markdown";
 
 // This enables static rendering
 // export const dynamic = "force-static";
@@ -67,6 +68,7 @@ export default async function Page({
             dateStyle: "long",
           })}
         </p>
+        <CopyAsMarkdown markdown={post.markdown} />
       </div>
       <ClientErrorBoundary>{mdx}</ClientErrorBoundary>
     </div>
