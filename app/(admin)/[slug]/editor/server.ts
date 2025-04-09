@@ -73,4 +73,6 @@ export async function updatePost(
     .where(eq(Post.slug, slug));
 
   revalidatePath("/(admin)/[slug]/editor", "page");
+  revalidatePath("/(default)/[slug]", "page");
+  revalidatePath("/(default)", "page");
 }
