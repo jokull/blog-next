@@ -5,12 +5,22 @@ import { Post } from "@/schema";
 import { compile, run } from "@mdx-js/mdx";
 import { eq, isNotNull } from "drizzle-orm";
 import { notFound } from "next/navigation";
+import { cache } from "react";
 import * as runtime from "react/jsx-runtime";
 import remarkGfm from "remark-gfm";
 import CopyAsMarkdown from "./_components/copy-as-markdown";
 
 // This enables static rendering
-// export const dynamic = "force-static";
+export const dynamic = "force-static";
+
+// Cache the database query for reuse
+const getPost = cache(async (slug: string) => {
+  const post = await db.query.Post.findFirst({ where: eq(Post.slug, slug) });
+  if (!post) {
+    notFound();
+  }
+  return post;
+});
 
 // Generate all possible slug values at build time
 export async function generateStaticParams() {
@@ -26,17 +36,25 @@ export async function generateStaticParams() {
   }));
 }
 
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
+  const { slug } = await params;
+  const post = await getPost(slug);
+  return {
+    title: post.title,
+  };
+}
+
 export default async function Page({
   params,
 }: {
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-
-  let post = await db.query.Post.findFirst({ where: eq(Post.slug, slug) });
-  if (!post) {
-    notFound();
-  }
+  const post = await getPost(slug);
 
   let mdx;
   try {
