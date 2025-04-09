@@ -114,12 +114,10 @@ export const components: Record<string, FC<any>> = {
 
     if (src.startsWith("https://")) {
       img = (
-        <Image
-          className="mt-7 rounded-xl max-w-xl"
+        <img
+          className="mt-7 rounded-xl max-w-[minmax(100%,576px)]"
           src={src}
           alt={alt}
-          quality={95}
-          placeholder="blur"
           draggable={false}
         />
       );
