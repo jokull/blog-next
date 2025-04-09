@@ -32,13 +32,13 @@ export const components: Record<string, FC<any>> = {
   ),
   ul: (props) => (
     <ul
-      className="mt-7 list-disc list-outside marker:text-rurikon-200 pl-5"
+      className="mt-7 list-disc list-outside marker:text-rurikon-200 pl-5 max-w-xl"
       {...props}
     />
   ),
   ol: (props) => (
     <ol
-      className="mt-7 list-decimal list-outside marker:text-rurikon-200 pl-5"
+      className="mt-7 list-decimal list-outside marker:text-rurikon-200 pl-5 max-w-xl"
       {...props}
     />
   ),
@@ -60,10 +60,10 @@ export const components: Record<string, FC<any>> = {
     );
   },
   strong: (props) => <strong className="font-bold" {...props} />,
-  p: (props) => <p className="mt-7" {...props} />,
+  p: (props) => <p className="mt-7 max-w-xl" {...props} />,
   blockquote: (props) => (
     <blockquote
-      className="pl-6 -ml-6 sm:pl-10 sm:-ml-10 md:pl-14 md:-ml-14 not-mobile:text-rurikon-400"
+      className="pl-6 -ml-6 sm:pl-10 sm:-ml-10 md:pl-14 md:-ml-14 not-mobile:text-rurikon-400 max-w-xl"
       {...props}
     />
   ),
@@ -115,7 +115,7 @@ export const components: Record<string, FC<any>> = {
     if (src.startsWith("https://")) {
       img = (
         <Image
-          className="mt-7 rounded-xl"
+          className="mt-7 rounded-xl max-w-xl"
           src={src}
           alt={alt}
           quality={95}
@@ -144,7 +144,9 @@ export const components: Record<string, FC<any>> = {
 
     return img;
   },
-  hr: (props) => <hr className="my-14 w-24 border-rurikon-border" {...props} />,
+  hr: (props) => (
+    <hr className="my-14 w-24 border-rurikon-border max-w-xl" {...props} />
+  ),
   BlockSideTitle,
   Tool,
   PhotoCaption,
