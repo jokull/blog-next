@@ -2,7 +2,9 @@ import { db } from "@/drizzle.config";
 import { Post } from "@/schema";
 import { desc, isNotNull } from "drizzle-orm";
 import Link from "next/link";
+import { Suspense } from "react";
 import { groupBy, pipe } from "remeda";
+import { Albums } from "./_components/albums";
 
 export const metadata = {
   title: "Jökull Sólberg",
@@ -52,6 +54,12 @@ export default async function Page() {
             </ul>
           </div>
         ))}
+      <div className="mb-7">
+        <h2 className="font-medium text-lg mb-2">Random Albums</h2>
+        <Suspense>
+          <Albums />
+        </Suspense>
+      </div>
     </div>
   );
 }
