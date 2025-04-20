@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { groupBy, pipe } from "remeda";
 import { Albums } from "./_components/albums";
+import { RecentShows } from "./_components/shows";
 
 export const metadata = {
   title: "Jökull Sólberg",
@@ -58,6 +59,12 @@ export default async function Page() {
         <h2 className="font-medium text-lg mb-2">Random Albums</h2>
         <Suspense>
           <Albums />
+        </Suspense>
+      </div>
+      <div className="mb-7">
+        <h2 className="font-medium text-lg mb-2">Recent Shows</h2>
+        <Suspense>
+          <RecentShows />
         </Suspense>
       </div>
     </div>

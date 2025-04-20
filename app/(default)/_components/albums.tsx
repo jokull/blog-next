@@ -7,12 +7,12 @@ const albumSchema = z.object({
 });
 
 export async function Albums() {
-  const data = await fetch("https://personal.plex.uno/random-albums", {
+  const albums = await fetch("https://personal.plex.uno/random-albums", {
     cache: "no-cache",
   })
     .then((r) => r.json())
+    .then(z.array(albumSchema).parse)
     .catch(() => []);
-  const albums = z.array(albumSchema).parse(data);
 
   return (
     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
