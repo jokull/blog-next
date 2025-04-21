@@ -1,17 +1,18 @@
 import { z } from "zod";
 
-const ShowSchema = z.object({
+const showSchema = z.object({
   title: z.string(),
   thumb: z.string(),
   poster: z.string(),
 });
 
-const ShowsResponseSchema = z.array(ShowSchema);
-
 export async function RecentShows() {
-  const response = await fetch("https://personal.plex.uno/recent-shows");
-  const data = await response.json();
-  const shows = ShowsResponseSchema.parse(data);
+  const shows = await fetch("https://personal.plex.uno/recent-shows", {
+    cache: "no-cache",
+  })
+    .then((r) => r.json())
+    .then(z.array(showSchema).parse)
+    .catch(() => []);
 
   return (
     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
