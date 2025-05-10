@@ -12,6 +12,9 @@ export const env = createEnv({
       .default(() =>
         process.env.VERCEL_ENV === "production" ? "production" : "development"
       ),
+    VERCEL_ENV: z.enum(["development", "preview", "production"]).optional(),
+    VERCEL_URL: z.string().optional(),
+    VERCEL_PROJECT_PRODUCTION_URL: z.string().optional(),
   },
   experimental__runtimeEnv: {},
 });

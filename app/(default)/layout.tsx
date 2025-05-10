@@ -1,4 +1,5 @@
 import Navbar from "@/components/navbar";
+import { env } from "@/env";
 
 export default function RootLayout({
   children,
@@ -17,6 +18,12 @@ export default function RootLayout({
           </article>
         </main>
       </div>
+      {env.VERCEL_ENV === "production" ? (
+        <script
+          defer
+          src="https://assets.onedollarstats.com/stonks.js"
+        ></script>
+      ) : null}
     </div>
   );
 }
