@@ -70,7 +70,7 @@ export const components: Record<string, FC<any>> = {
   ),
   pre: (props) => (
     <pre
-      className="mt-7 whitespace-pre md:whitespace-pre-wrap relative"
+      className="mt-7 whitespace-pre md:whitespace-pre-wrap relative rounded-sm shadow-xl/5 border border-neutral-950/10 px-4 py-3.5"
       {...props}
     />
   ),
