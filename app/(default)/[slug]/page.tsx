@@ -8,7 +8,7 @@ import { notFound } from "next/navigation";
 import { cache } from "react";
 import * as runtime from "react/jsx-runtime";
 import remarkGfm from "remark-gfm";
-import CopyAsMarkdown from "./_components/copy-as-markdown";
+import { ClipboardCopyButton } from "./_components/clipboard-copy-button";
 
 // This enables static rendering
 export const dynamic = "force-static";
@@ -86,7 +86,9 @@ export default async function Page({
             dateStyle: "long",
           })}
         </p>
-        <CopyAsMarkdown markdown={post.markdown} />
+        <ClipboardCopyButton text={post.markdown}>
+          Copy as markdown
+        </ClipboardCopyButton>
       </div>
       <ClientErrorBoundary>{mdx}</ClientErrorBoundary>
     </div>

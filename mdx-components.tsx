@@ -4,6 +4,7 @@ import Link from "next/link";
 import type { FC } from "react";
 import { codeToHtml, createCssVariablesTheme } from "shiki";
 
+import { ClipboardCopyButton } from "./app/(default)/[slug]/_components/clipboard-copy-button";
 import { BlockSideTitle } from "./components/block-sidetitle";
 import { PhotoCaption } from "./components/photo-caption";
 import { Tool } from "./components/tool";
@@ -68,7 +69,10 @@ export const components: Record<string, FC<any>> = {
     />
   ),
   pre: (props) => (
-    <pre className="mt-7 whitespace-pre md:whitespace-pre-wrap" {...props} />
+    <pre
+      className="mt-7 whitespace-pre md:whitespace-pre-wrap relative"
+      {...props}
+    />
   ),
   code: async (props) => {
     if (typeof props.children === "string") {
@@ -98,10 +102,18 @@ export const components: Record<string, FC<any>> = {
       });
 
       return (
-        <code
-          className="inline shiki css-variables text-[0.805rem]"
-          dangerouslySetInnerHTML={{ __html: code }}
-        />
+        <>
+          {/* Copy button */}
+          <span className="absolute top-3 right-4 [&>button]:decoration-0">
+            <ClipboardCopyButton text={props.children}>
+              Copy
+            </ClipboardCopyButton>
+          </span>
+          <code
+            className="inline shiki css-variables text-[0.805rem]"
+            dangerouslySetInnerHTML={{ __html: code }}
+          />
+        </>
       );
     }
 

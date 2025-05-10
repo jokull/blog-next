@@ -1,13 +1,19 @@
 "use client";
 
-import { useState } from "react";
+import { ReactNode, useState } from "react";
 
-export default function CopyAsMarkdown({ markdown }: { markdown: string }) {
+export function ClipboardCopyButton({
+  text,
+  children,
+}: {
+  text: string;
+  children: ReactNode;
+}) {
   const [copied, setCopied] = useState(false);
 
   async function handleCopy() {
     try {
-      await navigator.clipboard.writeText(markdown);
+      await navigator.clipboard.writeText(text);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000); // Reset after 2 seconds
     } catch (err) {
@@ -20,7 +26,7 @@ export default function CopyAsMarkdown({ markdown }: { markdown: string }) {
       onClick={handleCopy}
       className="text-xs text-blue-500 hover:underline focus:outline-none"
     >
-      {copied ? "Copied!" : "Copy as Markdown"}
+      {copied ? "Copied!" : children}
     </button>
   );
 }
