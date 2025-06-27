@@ -76,6 +76,9 @@ export const components: Record<string, FC<any>> = {
   ),
   code: async (props) => {
     if (typeof props.children === "string") {
+      // Check if this is a code block (multi-line) or inline code (single line)
+      const isCodeBlock = props.children.includes('\n') || props.children.length > 50;
+      
       const code = await codeToHtml(props.children, {
         lang: "jsx",
         theme: cssVariablesTheme,
@@ -103,12 +106,14 @@ export const components: Record<string, FC<any>> = {
 
       return (
         <>
-          {/* Copy button */}
-          <span className="absolute top-3 right-4 [&>button]:decoration-0">
-            <ClipboardCopyButton text={props.children}>
-              Copy
-            </ClipboardCopyButton>
-          </span>
+          {/* Copy button - only show for code blocks, not inline code */}
+          {isCodeBlock && (
+            <span className="absolute top-3 right-4 [&>button]:decoration-0">
+              <ClipboardCopyButton text={props.children}>
+                Copy
+              </ClipboardCopyButton>
+            </span>
+          )}
           <code
             className="inline shiki css-variables text-[0.805rem]"
             dangerouslySetInnerHTML={{ __html: code }}

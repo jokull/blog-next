@@ -52,6 +52,13 @@ export default function Navbar() {
           <a href="mailto:jokull@solberg.is">email</a>
           <a href="https://x.com/jokull">x.com/jokull</a>
           <a href="https://github.com/jokull/blog-next">source</a>
+          <a 
+            href="https://calendar.app.google/CbGee9NZCYu7gKhLA" 
+            target="_blank"
+            className="hover:underline"
+          >
+            Book 30min Meeting
+          </a>
         </div>
       </div>
     </nav>
