@@ -48,6 +48,7 @@ export default function Navbar() {
 						</div>
 					</Item>
 				</ul>
+
 				<div className="flex flex-col gap-1 text-sm text-right mt-4">
 					<a href="mailto:jokull@solberg.is">email</a>
 					<a href="https://x.com/jokull">x.com/jokull</a>

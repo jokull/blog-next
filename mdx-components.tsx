@@ -118,6 +118,7 @@ export const components: Record<string, FC<any>> = {
 					)}
 					<code
 						className="inline shiki css-variables text-[0.805rem]"
+						// biome-ignore lint/security/noDangerouslySetInnerHtml: I know what I'm doing
 						dangerouslySetInnerHTML={{ __html: code }}
 					/>
 				</>

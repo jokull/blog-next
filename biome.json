@@ -24,7 +24,7 @@
 				"noDangerouslySetInnerHtml": "warn"
 			},
 			"a11y": {
-				"noSvgWithoutTitle": "warn"
+				"noSvgWithoutTitle": "off"
 			},
 			"suspicious": {
 				"noArrayIndexKey": "warn"

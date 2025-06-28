@@ -1,5 +1,6 @@
 import { compile, run } from "@mdx-js/mdx";
 import { eq } from "drizzle-orm";
+import type { ReactElement, ReactNode } from "react";
 import * as runtime from "react/jsx-runtime";
 import { requireAuth } from "@/auth";
 import { ClientErrorBoundary } from "@/components/error-boundary";
@@ -34,8 +35,8 @@ export default async function Page({
 			.get();
 	}
 
-	let mdx: React.ReactElement | null = null;
-	let mdxError: string | null = null;
+	let mdx: ReactElement | null = null;
+	let mdxError: ReactNode | null = null;
 	try {
 		const code = String(
 			await compile(post.previewMarkdown || post.markdown, {
