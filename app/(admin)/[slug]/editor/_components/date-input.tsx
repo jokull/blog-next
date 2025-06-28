@@ -1,20 +1,11 @@
-import {
-	type ChangeEvent,
-	type ComponentProps,
-	useEffect,
-	useMemo,
-	useState,
-} from "react";
+import { type ChangeEvent, type ComponentProps, useEffect, useMemo, useState } from "react";
 import { useDebounceCallback } from "usehooks-ts";
-import { Input } from "@/app/_catalyst/input";
+import { Input } from "@/components/ui/input";
 
 type DateInputProps = {
 	value?: string;
 	onChange: (value: string | undefined) => void;
-} & Omit<
-	ComponentProps<typeof Input>,
-	"value" | "onChange" | "onBlur" | "type"
->;
+} & Omit<ComponentProps<typeof Input>, "value" | "onChange" | "onBlur" | "type">;
 
 function formatDate(date: Date): string {
 	const year = date.getFullYear();
@@ -33,9 +24,7 @@ function parseDate(dateStr: string): Date | undefined {
 	const day = parseInt(match[3], 10);
 	const date = new Date(year, month, day);
 
-	return date.getFullYear() === year &&
-		date.getMonth() === month &&
-		date.getDate() === day
+	return date.getFullYear() === year && date.getMonth() === month && date.getDate() === day
 		? date
 		: undefined;
 }

@@ -2,13 +2,7 @@
 
 import { type ReactNode, useState } from "react";
 
-export function ClipboardCopyButton({
-	text,
-	children,
-}: {
-	text: string;
-	children: ReactNode;
-}) {
+export function ClipboardCopyButton({ text, children }: { text: string; children: ReactNode }) {
 	const [copied, setCopied] = useState(false);
 
 	async function handleCopy() {
@@ -16,16 +10,14 @@ export function ClipboardCopyButton({
 			await navigator.clipboard.writeText(text);
 			setCopied(true);
 			setTimeout(() => setCopied(false), 2000); // Reset after 2 seconds
-		} catch (err) {
-			console.error("Failed to copy markdown:", err);
-		}
+		} catch (_err) {}
 	}
 
 	return (
 		<button
 			type="button"
 			onClick={handleCopy}
-			className="text-xs text-blue-500 hover:underline focus:outline-none"
+			className="text-blue-500 text-xs hover:underline focus:outline-none"
 		>
 			{copied ? "Copied!" : children}
 		</button>

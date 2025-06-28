@@ -6,9 +6,9 @@ import { useDebouncedCallback } from "@tanstack/react-pacer/debouncer";
 import type { InferSelectModel } from "drizzle-orm";
 import { createInsertSchema } from "drizzle-zod";
 import { type ReactNode, useCallback, useEffect, useState } from "react";
-import { Button } from "@/app/_catalyst/button";
-import { Input } from "@/app/_catalyst/input";
-import { Select } from "@/app/_catalyst/select";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Select, SelectItem } from "@/components/ui/select";
 import { Post } from "@/schema";
 import { previewPost, togglePublishPost, updatePost } from "../server";
 import { DateInput } from "./date-input";
@@ -16,13 +16,7 @@ import { Preview } from "./preview";
 
 const postSchema = createInsertSchema(Post);
 
-export function Editor({
-	mdx,
-	...props
-}: {
-	post: InferSelectModel<typeof Post>;
-	mdx: ReactNode;
-}) {
+export function Editor({ mdx, ...props }: { post: InferSelectModel<typeof Post>; mdx: ReactNode }) {
 	const [post, setPost] = useState({
 		...props.post,
 		previewMarkdown: props.post.previewMarkdown || props.post.markdown,
@@ -38,8 +32,7 @@ export function Editor({
 	);
 
 	const isTitleModified = post.title !== props.post.title;
-	const isDateModified =
-		post.publishedAt.getTime() !== props.post.publishedAt.getTime();
+	const isDateModified = post.publishedAt.getTime() !== props.post.publishedAt.getTime();
 	const isLocaleModified = post.locale !== props.post.locale;
 	const isMarkdownModified = post.previewMarkdown !== props.post.markdown;
 
@@ -70,14 +63,14 @@ export function Editor({
 	return (
 		<>
 			<Portal>
-				<div className="flex flex-col gap-2 w-2xl left-1/2 -translate-1/2 absolute bottom-0 p-4 rounded-2xl backdrop-blur-lg shadow-2xl bg-white/20">
+				<div className="-translate-1/2 absolute bottom-0 left-1/2 flex w-2xl flex-col gap-2 rounded-2xl bg-white/20 p-4 shadow-2xl backdrop-blur-lg">
 					<Input
 						value={post.title}
 						onChange={(event) => {
 							setPost({ ...post, title: event.target.value });
 						}}
 					/>
-					<div className="flex gap-2 justify-end items-center">
+					<div className="flex items-center justify-end gap-2">
 						<DateInput
 							value={post.publishedAt.toISOString().slice(0, 10)}
 							onChange={(value) => {
@@ -88,24 +81,17 @@ export function Editor({
 							}}
 						/>
 						<Select
-							value={post.locale}
-							onChange={(event) => {
-								const localeResult = postSchema.shape.locale.safeParse(
-									event.target.value,
-								);
+							selectedKey={post.locale}
+							onSelectionChange={(value) => {
+								const localeResult = postSchema.shape.locale.safeParse(value);
 								if (localeResult.data) {
 									setPost({ ...post, locale: localeResult.data });
 								}
 							}}
+							placeholder="Select language"
 						>
-							{[
-								["en", "English"],
-								["is", "Íslenska"],
-							].map(([locale, label]) => (
-								<option key={locale} value={locale}>
-									{label}
-								</option>
-							))}
+							<SelectItem id="en">English</SelectItem>
+							<SelectItem id="is">Íslenska</SelectItem>
 						</Select>
 						<Preview post={post}>{mdx}</Preview>
 						<form
@@ -115,14 +101,14 @@ export function Editor({
 								await togglePublishPost(post.slug);
 							}}
 						>
-							<Button type="submit" color="emerald" className="relative group">
-								<span className="invisible pointer-events-none select-none">
+							<Button type="submit" variant="default" className="group relative">
+								<span className="pointer-events-none invisible select-none">
 									Unpublished
 								</span>
-								<span className="group-hover:hidden absolute">
+								<span className="absolute group-hover:hidden">
 									{props.post.publicAt ? "Published" : "Unpublished"}
 								</span>
-								<span className="hidden group-hover:inline absolute">
+								<span className="absolute hidden group-hover:inline">
 									{props.post.publicAt ? "Unpublish" : "Publish"}
 								</span>
 							</Button>
@@ -139,7 +125,7 @@ export function Editor({
 								});
 							}}
 						>
-							<Button type="submit" color="green" disabled={!unsavedChanges}>
+							<Button type="submit" variant="default" isDisabled={!unsavedChanges}>
 								Save
 							</Button>
 						</form>

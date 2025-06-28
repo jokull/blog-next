@@ -13,18 +13,13 @@ export function Tool({
 }) {
 	return (
 		<div className="mb-8 flex items-start">
-			<a
-				href={url}
-				className="shrink-0 w-8 mt-1"
-				target="_blank"
-				rel="noopener noreferrer"
-			>
+			<a href={url} className="mt-1 w-8 shrink-0" target="_blank" rel="noopener noreferrer">
 				{children}
 			</a>
 			<div className="ml-4 leading-snug">
 				<a
 					href={url}
-					className="text-lg font-semibold"
+					className="font-semibold text-lg"
 					target="_blank"
 					rel="noopener noreferrer"
 				>

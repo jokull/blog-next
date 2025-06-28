@@ -36,11 +36,7 @@ export async function generateStaticParams() {
 	}));
 }
 
-export async function generateMetadata({
-	params,
-}: {
-	params: Promise<{ slug: string }>;
-}) {
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
 	const { slug } = await params;
 	const post = await getPost(slug);
 	return {
@@ -48,11 +44,7 @@ export async function generateMetadata({
 	};
 }
 
-export default async function Page({
-	params,
-}: {
-	params: Promise<{ slug: string }>;
-}) {
+export default async function Page({ params }: { params: Promise<{ slug: string }> }) {
 	const { slug } = await params;
 	const post = await getPost(slug);
 
@@ -77,18 +69,14 @@ export default async function Page({
 	return (
 		<div className="">
 			<div className="mb-7">
-				<h1 className="font-semibold text-rurikon-600 text-balance">
-					{post.title}
-				</h1>
+				<h1 className="text-balance font-semibold">{post.title}</h1>
 				<p className="text-sm">
 					{post.publishedAt.toLocaleDateString(post.locale, {
 						timeStyle: undefined,
 						dateStyle: "long",
 					})}
 				</p>
-				<ClipboardCopyButton text={post.markdown}>
-					Copy as markdown
-				</ClipboardCopyButton>
+				<ClipboardCopyButton text={post.markdown}>Copy as markdown</ClipboardCopyButton>
 			</div>
 			<ClientErrorBoundary>{mdx}</ClientErrorBoundary>
 		</div>

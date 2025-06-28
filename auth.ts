@@ -5,11 +5,7 @@ import { forbidden } from "next/navigation";
 import { env } from "@/env";
 
 export function getOauthClient(redirectUri: string = "") {
-	return new GitHub(
-		env.GITHUB_CLIENT_ID,
-		env.GITHUB_CLIENT_SECRET,
-		redirectUri,
-	);
+	return new GitHub(env.GITHUB_CLIENT_ID, env.GITHUB_CLIENT_SECRET, redirectUri);
 }
 
 export async function whoami(accessToken: string) {

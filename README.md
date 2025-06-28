@@ -34,6 +34,9 @@ bun run run:migration
 
 # Start development server
 bun dev
+
+# Run Turso locally
+turso dev --db-file database.db --port 9797
 ```
 
 ## Content Management

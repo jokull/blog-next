@@ -34,9 +34,7 @@ export async function togglePublishPost(slug: string) {
 		.update(Post)
 		.set({
 			publicAt: isCurrentlyPublished ? null : new Date(),
-			markdown: isCurrentlyPublished
-				? post.markdown
-				: post.previewMarkdown || post.markdown,
+			markdown: isCurrentlyPublished ? post.markdown : post.previewMarkdown || post.markdown,
 			previewMarkdown: null,
 		})
 		.where(eq(Post.slug, slug));
@@ -53,10 +51,7 @@ export async function updatePost(
 		publishedAt,
 		locale,
 		previewMarkdown,
-	}: Pick<
-		InferSelectModel<typeof Post>,
-		"title" | "publishedAt" | "locale" | "previewMarkdown"
-	>,
+	}: Pick<InferSelectModel<typeof Post>, "title" | "publishedAt" | "locale" | "previewMarkdown">,
 ) {
 	await requireAuth();
 	const post = await getPostOrThrow(slug);

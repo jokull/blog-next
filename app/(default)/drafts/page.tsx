@@ -35,14 +35,14 @@ export default async function Page() {
 								<li key={item.slug} className="font-medium">
 									<Link
 										href={`/${item.slug}`}
-										className="group flex gap-1 justify-between items-end"
+										className="group flex items-end justify-between gap-1"
 										draggable={false}
 									>
-										<span className="block text-rurikon-500 group-hover:text-rurikon-700">
+										<span className="block text-blue-500 group-hover:text-blue-700">
 											{item.title}
 										</span>
-										<span className="text-sm dot-leaders mb-[0.1rem] flex-1 text-rurikon-100 font-normal group-hover:text-rurikon-500 transition-colors group-hover:transition-none leading-none" />
-										<time className="block text-rurikon-200 tabular-nums font-normal tracking-tighter group-hover:text-rurikon-500 transition-colors group-hover:transition-none self-start whitespace-nowrap">
+										<span className="dot-leaders mb-[0.1rem] flex-1 font-normal text-blue-100 text-sm leading-none transition-colors group-hover:text-blue-500 group-hover:transition-none" />
+										<time className="block self-start whitespace-nowrap font-normal text-blue-200 tabular-nums tracking-tighter transition-colors group-hover:text-blue-500 group-hover:transition-none">
 											{item.publishedAt.toLocaleDateString(item.locale, {
 												year: undefined,
 												month: "long",

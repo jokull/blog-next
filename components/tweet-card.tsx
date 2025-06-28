@@ -17,16 +17,16 @@ export function Card({
 			target="_blank"
 			rel="noreferrer"
 			draggable={false}
-			className="group block rounded-lg overflow-clip select-none border border-rurikon-border my-7 transition-colors hover:bg-white"
+			className="group my-7 block select-none overflow-clip rounded-lg border border-blue-border transition-colors hover:bg-white"
 		>
 			<img
 				src={image}
 				alt={title}
-				className="m-0 w-full aspect-[1.9/1] object-cover border-b border-rurikon-border"
+				className="m-0 aspect-[1.9/1] w-full border-blue-border border-b object-cover"
 			/>
 			<p className="m-4 mt-3 mb-1 font-semibold">{title}</p>
-			<p className="m-4 mb-2 mt-1 opacity-80 text-sm">{desc}</p>
-			<p className="m-4 mt-1 mb-3 text-rurikon-200 text-sm transition-colors group-hover:text-rurikon-300">
+			<p className="m-4 mt-1 mb-2 text-sm opacity-80">{desc}</p>
+			<p className="m-4 mt-1 mb-3 text-blue-200 text-sm transition-colors group-hover:text-blue-300">
 				{link}
 			</p>
 		</a>

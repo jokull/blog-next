@@ -11,11 +11,7 @@ import { Editor } from "./_components/editor";
 
 export const dynamic = "force-dynamic";
 
-export default async function Page({
-	params,
-}: {
-	params: Promise<{ slug: string }>;
-}) {
+export default async function Page({ params }: { params: Promise<{ slug: string }> }) {
 	await requireAuth();
 	const { slug } = await params;
 
@@ -56,9 +52,7 @@ export default async function Page({
 	return (
 		<Editor
 			post={post}
-			mdx={
-				mdxError ? mdxError : <ClientErrorBoundary>{mdx}</ClientErrorBoundary>
-			}
+			mdx={mdxError ? mdxError : <ClientErrorBoundary>{mdx}</ClientErrorBoundary>}
 		/>
 	);
 }

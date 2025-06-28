@@ -21,16 +21,11 @@ export function PhotoCaption({
 
 			{caption &&
 				(fancy ? (
-					<div
-						className="
-              absolute inset-x-0 bottom-0 rounded-lg [background-image:var(--smooth-gradient)] px-4 pb-3 pt-6
-              text-center text-sm text-white text-balance
-            "
-					>
+					<div className="absolute inset-x-0 bottom-0 text-balance rounded-lg px-4 pt-6 pb-3 text-center text-sm text-white [background-image:var(--smooth-gradient)] ">
 						{caption}
 					</div>
 				) : (
-					<div className="my-4 text-center text-sm text-balance">{caption}</div>
+					<div className="my-4 text-balance text-center text-sm">{caption}</div>
 				))}
 		</div>
 	);
