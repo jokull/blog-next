@@ -15,7 +15,7 @@ export async function Albums() {
 		.catch(() => []);
 
 	return (
-		<div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+		<div className="-mx-6 flex gap-3 overflow-y-auto px-6 sm:grid sm:grid-cols-4 md:grid-cols-5 [&>*]:w-32 [&>*]:flex-shrink-0 sm:[&>*]:w-auto">
 			{albums.map((album) => (
 				<div key={`${album.artist}-${album.title}`} className="flex flex-col gap-1">
 					<div className="aspect-square overflow-hidden rounded-lg">
