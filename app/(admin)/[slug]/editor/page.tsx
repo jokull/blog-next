@@ -12,8 +12,8 @@ import { Editor } from "./_components/editor";
 export const dynamic = "force-dynamic";
 
 export default async function Page({ params }: { params: Promise<{ slug: string }> }) {
-	await requireAuth();
 	const { slug } = await params;
+	await requireAuth(`/${slug}/editor`);
 
 	let post = await db.query.Post.findFirst({ where: eq(Post.slug, slug) });
 	if (!post) {
