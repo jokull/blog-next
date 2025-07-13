@@ -15,3 +15,18 @@ export const Post = sqliteTable("post", {
 		.default("en")
 		.notNull(),
 });
+
+export const Comment = sqliteTable("comment", {
+	id: integer("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
+	postSlug: text("post_slug")
+		.notNull()
+		.references(() => Post.slug),
+	authorGithubId: integer("author_github_id", { mode: "number" }).notNull(),
+	authorGithubUsername: text("author_github_username").notNull(),
+	authorAvatarUrl: text("author_avatar_url").notNull(),
+	content: text("content").notNull(),
+	isHidden: integer("is_hidden", { mode: "boolean" }).default(false).notNull(),
+	createdAt: integer("created_at", { mode: "timestamp" })
+		.notNull()
+		.$default(() => new Date()),
+});

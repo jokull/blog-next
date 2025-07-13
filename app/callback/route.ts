@@ -17,16 +17,13 @@ export async function GET(request: NextRequest) {
 		const tokens = await github.validateAuthorizationCode(code);
 		const accessToken = tokens.accessToken();
 
-		const email = await whoami(accessToken);
+		const user = await whoami(accessToken);
 
-		// Check if the email matches the allowed email
-		if (email !== "jokull@solberg.is") {
-			return NextResponse.json("unauthorized");
-		}
+		// Allow any GitHub user to authenticate
 
 		// Set a cookie for authentication
 		const session = await getSession();
-		session.email = email;
+		session.githubUsername = user.login;
 		await session.save();
 
 		// Redirect to the original page or home

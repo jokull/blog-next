@@ -101,7 +101,7 @@ export function Editor({ mdx, ...props }: { post: InferSelectModel<typeof Post>;
 								await togglePublishPost(post.slug);
 							}}
 						>
-							<Button type="submit" variant="default" className="group relative">
+							<Button type="submit" intent="secondary" className="group relative">
 								<span className="pointer-events-none invisible select-none">
 									Unpublished
 								</span>
@@ -125,7 +125,7 @@ export function Editor({ mdx, ...props }: { post: InferSelectModel<typeof Post>;
 								});
 							}}
 						>
-							<Button type="submit" variant="default" isDisabled={!unsavedChanges}>
+							<Button type="submit" intent="primary" isDisabled={!unsavedChanges}>
 								Save
 							</Button>
 						</form>

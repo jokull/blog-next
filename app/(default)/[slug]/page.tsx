@@ -1,17 +1,19 @@
 import { compile, run } from "@mdx-js/mdx";
-import { eq, isNotNull } from "drizzle-orm";
+import { desc, eq, isNotNull } from "drizzle-orm";
 import { notFound } from "next/navigation";
 import { cache } from "react";
 import * as runtime from "react/jsx-runtime";
 import remarkGfm from "remark-gfm";
+import { getGithubUser, getSession, isAdmin } from "@/auth";
+import { CommentsSection } from "@/components/comments-section";
 import { ClientErrorBoundary } from "@/components/error-boundary";
 import { db } from "@/drizzle.config";
 import { components } from "@/mdx-components";
-import { Post } from "@/schema";
+import { Comment, Post } from "@/schema";
 import { ClipboardCopyButton } from "./_components/clipboard-copy-button";
 
-// This enables static rendering
-export const dynamic = "force-static";
+// This enables dynamic rendering for comments
+export const dynamic = "force-dynamic";
 
 // Cache the database query for reuse
 const getPost = cache(async (slug: string) => {
@@ -48,6 +50,61 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
 	const { slug } = await params;
 	const post = await getPost(slug);
 
+	// Get user session and admin status
+	const session = await getSession();
+	const isAdminUser = await isAdmin();
+
+	let user = null;
+	if (session.githubUsername) {
+		const githubUser = await getGithubUser(session.githubUsername);
+		user = {
+			email: "", // We don't need email for comments
+			githubId: githubUser.id,
+			githubUsername: githubUser.login,
+			name: githubUser.name || githubUser.login,
+			avatarUrl: githubUser.avatar_url,
+		};
+	}
+
+	// Fetch comments for this post
+	const comments = await db.query.Comment.findMany({
+		where: eq(Comment.postSlug, slug),
+		orderBy: [desc(Comment.createdAt)],
+	});
+
+	// Pre-render markdown content for each comment
+	const commentsWithRenderedContent = await Promise.all(
+		comments.map(async (comment) => {
+			let renderedContent: React.ReactElement | null = null;
+			
+			try {
+				const code = String(
+					await compile(comment.content, {
+						outputFormat: "function-body",
+						remarkPlugins: [remarkGfm],
+					}),
+				);
+				renderedContent = (
+					await run(code, {
+						...runtime,
+						baseUrl: import.meta.url,
+					})
+				).default({ components });
+			} catch {
+				renderedContent = null;
+			}
+
+			return {
+				...comment,
+				renderedContent,
+			};
+		})
+	);
+
+	// Get visible comment count
+	const visibleComments = commentsWithRenderedContent.filter((comment) => !comment.isHidden || isAdminUser);
+	const commentCount = visibleComments.length;
+
 	let mdx: React.ReactElement | null = null;
 	try {
 		const code = String(
@@ -79,6 +136,17 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
 				<ClipboardCopyButton text={post.markdown}>Copy as markdown</ClipboardCopyButton>
 			</div>
 			<ClientErrorBoundary>{mdx}</ClientErrorBoundary>
+
+			<div className="mt-12 max-w-xl border-t pt-8">
+				<CommentsSection
+					postSlug={slug}
+					user={user}
+					comments={visibleComments}
+					commentCount={commentCount}
+					isAdmin={isAdminUser}
+					currentUsername={session.githubUsername}
+				/>
+			</div>
 		</div>
 	);
 }
