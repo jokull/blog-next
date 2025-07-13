@@ -1,7 +1,7 @@
-import { GitHub } from "arctic";
+import { GitHub, generateState } from "arctic";
 import { getIronSession } from "iron-session";
-import { cookies } from "next/headers";
-import { forbidden } from "next/navigation";
+import { cookies, headers } from "next/headers";
+import { redirect } from "next/navigation";
 import { env } from "@/env";
 
 export function getOauthClient(redirectUri: string = "") {
@@ -20,10 +20,19 @@ export async function whoami(accessToken: string) {
 	return user.email;
 }
 
-export async function requireAuth() {
+export async function requireAuth(currentUrl?: string) {
 	const session = await getSession();
 	if (session.email !== "jokull@solberg.is") {
-		forbidden();
+		const headersList = await headers();
+		const host = headersList.get("host");
+		const callbackUrl = `https://${host}/callback?next=${encodeURIComponent(currentUrl || "/")}`;
+		const github = getOauthClient(callbackUrl);
+
+		const state = generateState();
+		const scopes = ["user:email"];
+		const authorizationURL = github.createAuthorizationURL(state, scopes);
+
+		redirect(authorizationURL.toString());
 	}
 	return session.email;
 }

@@ -4,8 +4,10 @@ import { getOauthClient, getSession, whoami } from "@/auth";
 export async function GET(request: NextRequest) {
 	const github = getOauthClient(`https://${request.nextUrl.host}/callback`);
 
-	// Extract the authorization code from the query parameters
+	// Extract the authorization code and next URL from query parameters
 	const code = request.nextUrl.searchParams.get("code");
+	const nextUrl = request.nextUrl.searchParams.get("next");
+
 	if (!code) {
 		return NextResponse.json("missing_code");
 	}
@@ -21,12 +23,15 @@ export async function GET(request: NextRequest) {
 		if (email !== "jokull@solberg.is") {
 			return NextResponse.json("unauthorized");
 		}
+
 		// Set a cookie for authentication
 		const session = await getSession();
 		session.email = email;
 		await session.save();
 
-		return NextResponse.json("ok");
+		// Redirect to the original page or home
+		const redirectUrl = nextUrl ? decodeURIComponent(nextUrl) : "/";
+		return NextResponse.redirect(new URL(redirectUrl, request.url));
 	} catch (error) {
 		return NextResponse.json(error);
 	}

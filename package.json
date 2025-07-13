@@ -6,10 +6,8 @@
 		"dev": "next dev --turbo",
 		"build": "next build",
 		"start": "next start",
-		"lint": "biome check .",
-		"lint:fix": "biome check --write .",
-		"lint:unsafe-fix": "biome check --write --unsafe .",
-		"format": "biome format --write .",
+		"format-and-lint": "biome check . --assist-enabled=false",
+		"format-and-lint:fix": "biome check . --write",
 		"generate:migration": "drizzle-kit generate",
 		"run:migration": "drizzle-kit up"
 	},
