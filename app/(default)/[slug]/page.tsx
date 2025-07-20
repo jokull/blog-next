@@ -1,6 +1,7 @@
 import { compile, run } from "@mdx-js/mdx";
 import { desc, eq, isNotNull } from "drizzle-orm";
-import { notFound, type Metadata } from "next/navigation";
+import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import { cache } from "react";
 import * as runtime from "react/jsx-runtime";
 import remarkGfm from "remark-gfm";
@@ -40,7 +41,11 @@ export async function generateStaticParams() {
 	}));
 }
 
-export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+export async function generateMetadata({
+	params,
+}: {
+	params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
 	const { slug } = await params;
 	const post = await getPost(slug);
 
