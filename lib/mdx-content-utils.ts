@@ -1,7 +1,7 @@
 import type { Paragraph, Root } from "mdast";
 import { fromMarkdown } from "mdast-util-from-markdown";
 import { mdxFromMarkdown } from "mdast-util-mdx";
-import { toString } from "mdast-util-to-string";
+import { toString as mdastToString } from "mdast-util-to-string";
 import { mdxjs } from "micromark-extension-mdxjs";
 import { visit } from "unist-util-visit";
 import { extractFirstImage } from "./mdx-image-extractor";
@@ -21,7 +21,7 @@ export async function extractFirstParagraph(markdown: string): Promise<string> {
 
 		visit(tree, "paragraph", (node: Paragraph) => {
 			if (!firstParagraph) {
-				const text = toString(node).trim();
+				const text = mdastToString(node).trim();
 				if (text && text.length > 0) {
 					firstParagraph = text;
 					return false;
@@ -30,8 +30,7 @@ export async function extractFirstParagraph(markdown: string): Promise<string> {
 		});
 
 		return firstParagraph;
-	} catch (error) {
-		console.warn("Failed to extract first paragraph from markdown:", error);
+	} catch (_error) {
 		return "";
 	}
 }
@@ -60,8 +59,8 @@ export function truncateText(text: string, maxLength: number = 160): string {
 	const lastSpace = truncated.lastIndexOf(" ");
 
 	if (lastSpace > maxLength * 0.8) {
-		return truncated.substring(0, lastSpace) + "...";
+		return `${truncated.substring(0, lastSpace)}...`;
 	}
 
-	return truncated + "...";
+	return `${truncated}...`;
 }

@@ -14,7 +14,7 @@ export function CommentEditToggle({
 	commentId,
 	content,
 	renderedContent,
-	canEdit,
+	_canEdit,
 }: CommentEditToggleProps) {
 	const [isEditing, setIsEditing] = useState(false);
 
@@ -36,20 +36,21 @@ export function CommentEditToggle({
 }
 
 export function CommentEditButton({
-	commentId,
-	content,
+	_commentId,
+	_content,
 	canEdit,
 }: {
 	commentId: number;
 	content: string;
 	canEdit: boolean;
 }) {
-	const [isEditing, setIsEditing] = useState(false);
+	const [_isEditing, setIsEditing] = useState(false);
 
 	if (!canEdit) return null;
 
 	return (
 		<button
+			type="button"
 			onClick={() => setIsEditing(true)}
 			className="text-muted-foreground text-sm hover:text-foreground"
 		>

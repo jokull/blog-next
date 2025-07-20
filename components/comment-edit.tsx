@@ -22,9 +22,7 @@ export function CommentEdit({ commentId, initialContent, onCancel }: CommentEdit
 			try {
 				await updateComment(commentId, content);
 				onCancel(); // Close edit mode
-			} catch (error) {
-				console.error("Failed to update comment:", error);
-			}
+			} catch (_error) {}
 		});
 	}
 

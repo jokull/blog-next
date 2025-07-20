@@ -1,4 +1,4 @@
-import type { Root, Image } from "mdast";
+import type { Image, Root } from "mdast";
 import { fromMarkdown } from "mdast-util-from-markdown";
 import type { MdxJsxFlowElement } from "mdast-util-mdx";
 import { mdxFromMarkdown } from "mdast-util-mdx";
@@ -66,8 +66,7 @@ export async function extractFirstImage(markdown: string): Promise<string | null
 		});
 
 		return firstImageSrc;
-	} catch (error) {
-		console.warn("Failed to extract image from markdown:", error);
+	} catch (_error) {
 		return null;
 	}
 }
@@ -77,12 +76,12 @@ function isTopLevel(parent: any, index: number | undefined): boolean {
 
 	// If the parent is root, it's top level
 	if (parent.type === "root") return true;
-	
+
 	// If the parent is a paragraph, we need to check if this paragraph
 	// is a direct child of root. We can't rely on parent.parent from visit,
 	// so we assume paragraphs are top-level unless they're nested in other structures
 	if (parent.type === "paragraph") return true;
-	
+
 	return false;
 }
 

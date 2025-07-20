@@ -19,7 +19,7 @@ export function CommentDeleteButton({ commentId }: CommentDeleteButtonProps) {
 			startTransition(async () => {
 				try {
 					await deleteComment(commentId);
-				} catch (error) {
+				} catch (_error) {
 					alert("Failed to delete comment. Please try again.");
 				}
 			});
