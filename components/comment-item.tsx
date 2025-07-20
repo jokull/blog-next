@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { CommentAdminToggle } from "./comment-admin-toggle";
+import { CommentDeleteButton } from "./comment-delete-button";
 import { CommentEdit } from "./comment-edit";
 
 interface CommentItemProps {
@@ -85,6 +86,7 @@ export function CommentItem({ comment, isAdmin, currentUsername }: CommentItemPr
 								Edit
 							</button>
 						)}
+						{canEdit && <CommentDeleteButton commentId={comment.id} />}
 						{isAdmin && (
 							<CommentAdminToggle
 								commentId={comment.id}

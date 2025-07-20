@@ -76,7 +76,7 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
 	const commentsWithRenderedContent = await Promise.all(
 		comments.map(async (comment) => {
 			let renderedContent: React.ReactElement | null = null;
-			
+
 			try {
 				const code = String(
 					await compile(comment.content, {
@@ -98,11 +98,13 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
 				...comment,
 				renderedContent,
 			};
-		})
+		}),
 	);
 
 	// Get visible comment count
-	const visibleComments = commentsWithRenderedContent.filter((comment) => !comment.isHidden || isAdminUser);
+	const visibleComments = commentsWithRenderedContent.filter(
+		(comment) => !comment.isHidden || isAdminUser,
+	);
 	const commentCount = visibleComments.length;
 
 	let mdx: React.ReactElement | null = null;

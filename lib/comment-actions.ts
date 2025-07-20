@@ -96,3 +96,39 @@ export async function toggleCommentHidden(commentId: number, isHidden: boolean) 
 
 	return updatedComment[0];
 }
+
+export async function deleteComment(commentId: number) {
+	const session = await getSession();
+	if (!session.githubUsername) {
+		throw new Error("Please sign in to delete comments");
+	}
+
+	// Get the comment to verify ownership
+	const existingComment = await db.query.Comment.findFirst({
+		where: eq(Comment.id, commentId),
+	});
+
+	if (!existingComment) {
+		throw new Error("Comment not found");
+	}
+
+	// Check if user is the author or admin
+	const isCommentAuthor = existingComment.authorGithubUsername === session.githubUsername;
+	const isAdminUser = await isAdmin();
+
+	if (!isCommentAuthor && !isAdminUser) {
+		throw new Error("You can only delete your own comments");
+	}
+
+	const deletedComment = await db.delete(Comment).where(eq(Comment.id, commentId)).returning();
+
+	if (deletedComment.length === 0) {
+		throw new Error("Comment not found");
+	}
+
+	// Revalidate the post page
+	const postSlug = deletedComment[0].postSlug;
+	revalidatePath(`/${postSlug}`);
+
+	return deletedComment[0];
+}

@@ -10,7 +10,12 @@ interface CommentEditToggleProps {
 	canEdit: boolean;
 }
 
-export function CommentEditToggle({ commentId, content, renderedContent, canEdit }: CommentEditToggleProps) {
+export function CommentEditToggle({
+	commentId,
+	content,
+	renderedContent,
+	canEdit,
+}: CommentEditToggleProps) {
 	const [isEditing, setIsEditing] = useState(false);
 
 	if (isEditing) {
@@ -25,16 +30,20 @@ export function CommentEditToggle({ commentId, content, renderedContent, canEdit
 
 	return (
 		<div className="prose prose-sm max-w-none">
-			{renderedContent || (
-				<div className="whitespace-pre-wrap">
-					{content}
-				</div>
-			)}
+			{renderedContent || <div className="whitespace-pre-wrap">{content}</div>}
 		</div>
 	);
 }
 
-export function CommentEditButton({ commentId, content, canEdit }: { commentId: number; content: string; canEdit: boolean }) {
+export function CommentEditButton({
+	commentId,
+	content,
+	canEdit,
+}: {
+	commentId: number;
+	content: string;
+	canEdit: boolean;
+}) {
 	const [isEditing, setIsEditing] = useState(false);
 
 	if (!canEdit) return null;

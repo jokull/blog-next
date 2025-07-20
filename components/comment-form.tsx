@@ -27,17 +27,8 @@ export function CommentForm({ postSlug, user }: CommentFormProps) {
 		if (!newComment.trim() || !user || isPending) return;
 
 		startTransition(async () => {
-			try {
-				await createComment(postSlug, newComment);
-				setNewComment("");
-			} catch (error) {
-				// If it's an auth error, redirect to login
-				if (error instanceof Error && error.message.includes("sign in")) {
-					handleLogin();
-				} else {
-					throw error;
-				}
-			}
+			await createComment(postSlug, newComment);
+			setNewComment("");
 		});
 	}
 

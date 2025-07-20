@@ -2,7 +2,7 @@ import { compile, run } from "@mdx-js/mdx";
 import { eq } from "drizzle-orm";
 import type { ReactElement, ReactNode } from "react";
 import * as runtime from "react/jsx-runtime";
-import { requireAuth } from "@/auth";
+import { requireAdmin } from "@/auth";
 import { ClientErrorBoundary } from "@/components/error-boundary";
 import { db } from "@/drizzle.config";
 import { components } from "@/mdx-components";
@@ -13,7 +13,7 @@ export const dynamic = "force-dynamic";
 
 export default async function Page({ params }: { params: Promise<{ slug: string }> }) {
 	const { slug } = await params;
-	await requireAuth(`/${slug}/editor`);
+	await requireAdmin(`/${slug}/editor`);
 
 	let post = await db.query.Post.findFirst({ where: eq(Post.slug, slug) });
 	if (!post) {
