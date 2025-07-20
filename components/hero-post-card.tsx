@@ -9,7 +9,9 @@ interface TheaterProps {
 
 export function Theater({ children, className = "" }: TheaterProps) {
 	return (
-		<div className={`-mx-4 rounded-xl bg-stone-800 text-white leading-tight ${className}`}>
+		<div
+			className={`-mx-4 inset-shadow-sm rounded-2xl bg-gradient-to-r from-stone-700 to-stone-900 text-white leading-tight ${className}`}
+		>
 			{children}
 		</div>
 	);

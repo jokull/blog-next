@@ -15,20 +15,16 @@ export async function Albums() {
 		.catch(() => []);
 
 	return (
-		<div className="-mx-6 flex gap-3 overflow-y-auto px-6 sm:grid sm:grid-cols-4 md:grid-cols-5 [&>*]:w-32 [&>*]:flex-shrink-0 sm:[&>*]:w-auto">
+		<div className="-mx-6 flex gap-3 px-6 sm:grid sm:grid-cols-4 md:grid-cols-5 [&>*]:flex-shrink-0">
 			{albums.map((album) => (
-				<div
+				<img
 					key={`${album.artist}-${album.title}`}
-					className="aspect-square overflow-hidden rounded-lg"
-				>
-					<img
-						src={`https://personal.plex.uno${album.coverPath}`}
-						alt={`${album.title} by ${album.artist}`}
-						width={128}
-						height={128}
-						className="h-full w-full object-cover"
-					/>
-				</div>
+					alt={`${album.title} by ${album.artist}`}
+					src={`https://personal.plex.uno${album.coverPath}`}
+					width={128}
+					height={128}
+					className="aspect-square rounded-sm object-cover shadow-lg"
+				/>
 			))}
 		</div>
 	);

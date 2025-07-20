@@ -102,7 +102,7 @@ export default async function Page() {
 					</div>
 					{index === 0 && (
 						<div className="mb-7">
-							<Theater className="p-4">
+							<Theater className="p-3">
 								<Suspense>
 									<Albums />
 								</Suspense>
@@ -111,7 +111,7 @@ export default async function Page() {
 					)}
 					{index === 1 && (
 						<div className="mb-7">
-							<Theater className="p-4">
+							<Theater className="p-3">
 								<Suspense>
 									<RecentShows />
 								</Suspense>
