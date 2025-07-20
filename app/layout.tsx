@@ -27,6 +27,16 @@ export const metadata: Metadata = {
 		template: "%s - Jökull Sólberg",
 		default: "Jökull Sólberg",
 	},
+	alternates: {
+		types: {
+			"application/rss+xml": [
+				{
+					url: "/feed.xml",
+					title: "Jökull Sólberg RSS Feed",
+				},
+			],
+		},
+	},
 };
 
 export const viewport: Viewport = {

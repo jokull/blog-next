@@ -15,6 +15,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 This is a Next.js 15 blog application with server-side rendering and a Monaco-based markdown editor. The architecture follows these patterns:
 
 ### Core Technologies
+
 - **Next.js 15** with App Router and React Server Components
 - **Turso (LibSQL)** database with Drizzle ORM
 - **Biome 2.0** for linting and formatting (tab indentation, 100 char line width)
@@ -23,12 +24,15 @@ This is a Next.js 15 blog application with server-side rendering and a Monaco-ba
 - **Monaco Editor** for markdown editing
 
 ### Database Schema
+
 Single `Post` table with fields: `slug` (PK), `title`, `markdown`, `previewMarkdown`, `publicAt`, `createdAt`, `publishedAt`, `modifiedAt`, `locale` (enum: "is", "en")
 
 ### Authentication
+
 GitHub OAuth-based authentication with hard-coded email check (`jokull@solberg.is`) in `auth.ts:25`. Uses iron-session for session management.
 
 ### App Structure
+
 - `app/(default)/` - Public blog routes
 - `app/(admin)/` - Admin routes requiring authentication
 - `app/(admin)/[slug]/editor/` - Monaco-based markdown editor with live preview
@@ -37,18 +41,21 @@ GitHub OAuth-based authentication with hard-coded email check (`jokull@solberg.i
 - `mdx-components.tsx` - Custom MDX component mappings
 
 ### URL Structure
+
 - `/` - Post index page
 - `/{slug}` - Published post view
 - `/{slug}/editor` - Edit/create post (requires auth)
 - `/drafts` - Draft posts view
 
 ### Key Features
+
 - Server-side syntax highlighting with Shiki (zero client-side JS for code blocks)
 - Live preview in editor using MDX compilation
 - Draft/publish state management
 - Two-locale support (Icelandic/English)
 
 ### Development Notes
+
 - Uses `bun` as package manager
 - Turbo mode enabled for faster development
 - Database runs locally via Turso CLI
