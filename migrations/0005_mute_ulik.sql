@@ -1,0 +1,1 @@
+ALTER TABLE `post` ADD `hero_image` text;

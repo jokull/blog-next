@@ -1,6 +1,6 @@
 import { compile, run } from "@mdx-js/mdx";
 import { desc, eq, isNotNull } from "drizzle-orm";
-import { notFound } from "next/navigation";
+import { notFound, type Metadata } from "next/navigation";
 import { cache } from "react";
 import * as runtime from "react/jsx-runtime";
 import remarkGfm from "remark-gfm";
@@ -8,6 +8,8 @@ import { getGithubUser, getSession, isAdmin } from "@/auth";
 import { CommentsSection } from "@/components/comments-section";
 import { ClientErrorBoundary } from "@/components/error-boundary";
 import { db } from "@/drizzle.config";
+import { extractFirstParagraph } from "@/lib/mdx-content-utils";
+import { normalizeImageUrl } from "@/lib/mdx-image-extractor";
 import { components } from "@/mdx-components";
 import { Comment, Post } from "@/schema";
 import { ClipboardCopyButton } from "./_components/clipboard-copy-button";
@@ -38,12 +40,41 @@ export async function generateStaticParams() {
 	}));
 }
 
-export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
 	const { slug } = await params;
 	const post = await getPost(slug);
-	return {
+
+	const description = await extractFirstParagraph(post.markdown);
+	const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://blog-shud.vercel.app";
+
+	const metadata: Metadata = {
 		title: post.title,
+		description: description.substring(0, 160),
 	};
+
+	if (post.heroImage) {
+		const imageUrl = normalizeImageUrl(post.heroImage, baseUrl);
+		metadata.openGraph = {
+			title: post.title,
+			description: description.substring(0, 160),
+			images: [
+				{
+					url: imageUrl,
+					width: 1200,
+					height: 630,
+					alt: post.title,
+				},
+			],
+		};
+		metadata.twitter = {
+			card: "summary_large_image",
+			title: post.title,
+			description: description.substring(0, 160),
+			images: [imageUrl],
+		};
+	}
+
+	return metadata;
 }
 
 export default async function Page({ params }: { params: Promise<{ slug: string }> }) {

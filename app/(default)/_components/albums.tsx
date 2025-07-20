@@ -17,18 +17,17 @@ export async function Albums() {
 	return (
 		<div className="-mx-6 flex gap-3 overflow-y-auto px-6 sm:grid sm:grid-cols-4 md:grid-cols-5 [&>*]:w-32 [&>*]:flex-shrink-0 sm:[&>*]:w-auto">
 			{albums.map((album) => (
-				<div key={`${album.artist}-${album.title}`} className="flex flex-col gap-1">
-					<div className="aspect-square overflow-hidden rounded-lg">
-						<img
-							src={`https://personal.plex.uno${album.coverPath}`}
-							alt={`${album.title} by ${album.artist}`}
-							width={128}
-							height={128}
-							className="h-full w-full object-cover"
-						/>
-					</div>
-					<div className="font-medium text-sm">{album.title}</div>
-					<div className="text-gray-500 text-xs">{album.artist}</div>
+				<div
+					key={`${album.artist}-${album.title}`}
+					className="aspect-square overflow-hidden rounded-lg"
+				>
+					<img
+						src={`https://personal.plex.uno${album.coverPath}`}
+						alt={`${album.title} by ${album.artist}`}
+						width={128}
+						height={128}
+						className="h-full w-full object-cover"
+					/>
 				</div>
 			))}
 		</div>

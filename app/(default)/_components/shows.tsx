@@ -24,11 +24,8 @@ export async function RecentShows() {
 							alt={show.title}
 							width={80}
 							height={112}
-							className="h-full w-full object-cover"
+							className="aspect-[10/16] h-full w-full object-cover"
 						/>
-					</div>
-					<div className="flex flex-col">
-						<div className="font-medium text-sm">{show.title}</div>
 					</div>
 				</div>
 			))}

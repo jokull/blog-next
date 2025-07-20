@@ -2,7 +2,9 @@ import { desc, eq, isNotNull, sql } from "drizzle-orm";
 import Link from "next/link";
 import { Suspense } from "react";
 import { groupBy, pipe } from "remeda";
+import { HeroPostCard, Theater } from "@/components/hero-post-card";
 import { db } from "@/drizzle.config";
+import { extractFirstParagraph } from "@/lib/mdx-content-utils";
 import { Comment, Post } from "@/schema";
 import { Albums } from "./_components/albums";
 import { RecentShows } from "./_components/shows";
@@ -35,20 +37,39 @@ export default async function Page() {
 		{} as Record<string, number>,
 	);
 
-	// Group posts by year using Remeda
+	// Find the most recent post with a hero image for the hero card
+	const heroPost = posts.find((post) => post.heroImage);
+	const heroPostExcerpt = heroPost ? await extractFirstParagraph(heroPost.markdown) : "";
+
+	// Filter out the hero post from the regular listing if it exists
+	const remainingPosts = heroPost ? posts.filter((post) => post.slug !== heroPost.slug) : posts;
+
+	// Group remaining posts by year using Remeda
 	const postsByYear = pipe(
-		posts,
+		remainingPosts,
 		groupBy((post) => post.publishedAt.getFullYear().toString()),
 	);
 
 	const sortedYears = Object.keys(postsByYear).sort((a, b) => (b > a ? 1 : -1));
+	const currentYear = new Date().getFullYear().toString();
 
 	return (
 		<div className="max-w-xl">
+			{heroPost && (
+				<HeroPostCard
+					slug={heroPost.slug}
+					title={heroPost.title}
+					publishedAt={heroPost.publishedAt}
+					heroImage={heroPost.heroImage!}
+					excerpt={heroPostExcerpt}
+					locale={heroPost.locale}
+					commentCount={commentCountsMap[heroPost.slug] || 0}
+				/>
+			)}
 			{sortedYears.map((year, index) => (
 				<div key={year}>
 					<div className="mb-7">
-						<h2 className="font-light">{year}</h2>
+						{year !== currentYear && <h2 className="font-bold">{year}</h2>}
 						<ul>
 							{postsByYear[year]?.map((item) => (
 								<li key={item.slug} className="font-medium">
@@ -81,18 +102,20 @@ export default async function Page() {
 					</div>
 					{index === 0 && (
 						<div className="mb-7">
-							<h2 className="mb-2">Random Albums</h2>
-							<Suspense>
-								<Albums />
-							</Suspense>
+							<Theater className="p-4">
+								<Suspense>
+									<Albums />
+								</Suspense>
+							</Theater>
 						</div>
 					)}
 					{index === 1 && (
 						<div className="mb-7">
-							<h2 className="mb-2">Recent Shows</h2>
-							<Suspense>
-								<RecentShows />
-							</Suspense>
+							<Theater className="p-4">
+								<Suspense>
+									<RecentShows />
+								</Suspense>
+							</Theater>
 						</div>
 					)}
 				</div>

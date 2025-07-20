@@ -14,6 +14,7 @@ export const Post = sqliteTable("post", {
 	locale: text("locale", { enum: ["is", "en"] })
 		.default("en")
 		.notNull(),
+	heroImage: text("hero_image"),
 });
 
 export const Comment = sqliteTable("comment", {
