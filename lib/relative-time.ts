@@ -26,17 +26,10 @@ export function getRelativeTime(date: Date, locale: "is" | "en" = "en"): string 
 		})}`;
 	}
 
-	if (diffInDays <= 7 && diffInDays > 1) {
-		const dayText = diffInDays === 1 ? "day" : "days";
-		return `${diffInDays} ${dayText} ago, ${date.toLocaleDateString(locale, {
-			month: "long",
-			day: "numeric",
-			year: "numeric",
-		})}`;
-	}
-
-	// Fallback to regular date format
+	// For all other dates, just return the full date without relative time
 	return date.toLocaleDateString(locale, {
-		dateStyle: "long",
+		month: "long",
+		day: "numeric",
+		year: "numeric",
 	});
 }
