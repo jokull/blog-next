@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { getRelativeTime } from "@/lib/relative-time";
 import { CommentAdminToggle } from "./comment-admin-toggle";
 import { CommentDeleteButton } from "./comment-delete-button";
 import { CommentEdit } from "./comment-edit";
@@ -42,7 +43,7 @@ export function CommentItem({ comment, isAdmin, currentUsername }: CommentItemPr
 								@{comment.authorGithubUsername}
 							</a>
 							<span className="text-muted-foreground text-sm">
-								{new Date(comment.createdAt).toLocaleDateString()}
+								{getRelativeTime(comment.createdAt)}
 							</span>
 						</div>
 						<CommentEdit
@@ -75,7 +76,7 @@ export function CommentItem({ comment, isAdmin, currentUsername }: CommentItemPr
 							{comment.authorGithubUsername}
 						</a>
 						<span className="text-muted-foreground text-sm">
-							{new Date(comment.createdAt).toLocaleDateString()}
+							{getRelativeTime(comment.createdAt)}
 						</span>
 						{canEdit && (
 							<button
