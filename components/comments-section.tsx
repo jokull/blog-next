@@ -39,15 +39,13 @@ export function CommentsSection({
 }: CommentsSectionProps) {
 	return (
 		<div className="space-y-6">
+			<CommentsList comments={comments} isAdmin={isAdmin} currentUsername={currentUsername} />
 			<div className="space-y-4">
 				<h3 className="font-medium text-lg">
 					Comments <span className="text-neutral-400">{commentCount}</span>
 				</h3>
-
 				<CommentForm postSlug={postSlug} user={user} />
 			</div>
-
-			<CommentsList comments={comments} isAdmin={isAdmin} currentUsername={currentUsername} />
 		</div>
 	);
 }

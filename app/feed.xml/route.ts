@@ -4,6 +4,7 @@ import { db } from "@/drizzle.config";
 import { env } from "@/env";
 import { extractFirstParagraph } from "@/lib/mdx-content-utils";
 import { extractFirstImage, normalizeImageUrl } from "@/lib/mdx-image-extractor";
+import { getRelativeTime } from "@/lib/relative-time";
 import { Post } from "@/schema";
 
 export async function GET() {
@@ -36,6 +37,10 @@ export async function GET() {
 	for (const post of posts) {
 		// Extract first paragraph as description
 		const description = await extractFirstParagraph(post.markdown);
+		const relativeTime = getRelativeTime(post.publishedAt);
+		const fullDescription = description 
+			? `${relativeTime} — ${description}`
+			: `${relativeTime} — ${post.title}`;
 
 		// Get hero image from database or extract from markdown
 		let heroImageUrl: string | null = post.heroImage;
@@ -48,7 +53,7 @@ export async function GET() {
 
 		const feedItem: any = {
 			title: post.title,
-			description: description || post.title,
+			description: fullDescription,
 			url: `${baseUrl}/${post.slug}`,
 			guid: post.slug,
 			date: post.publishedAt,
