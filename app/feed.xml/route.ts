@@ -1,13 +1,14 @@
-import RSS from "rss";
 import { desc, isNotNull } from "drizzle-orm";
+import RSS from "rss";
 import { db } from "@/drizzle.config";
-import { Post } from "@/schema";
+import { env } from "@/env";
 import { extractFirstParagraph } from "@/lib/mdx-content-utils";
+import { extractFirstImage, normalizeImageUrl } from "@/lib/mdx-image-extractor";
+import { Post } from "@/schema";
 
 export async function GET() {
-	const baseUrl = process.env.NODE_ENV === "production" 
-		? "https://blog.jokull.dev" 
-		: `http://localhost:${process.env.PORT || 3000}`;
+	const baseUrl =
+		env.VERCEL_PROJECT_PRODUCTION_URL ?? `http://localhost:${process.env.PORT || 3000}`;
 
 	const feed = new RSS({
 		title: "Jökull Sólberg",
@@ -35,14 +36,33 @@ export async function GET() {
 		// Extract first paragraph as description
 		const description = await extractFirstParagraph(post.markdown);
 		
-		feed.item({
+		// Get hero image from database or extract from markdown
+		let heroImageUrl: string | null = post.heroImage;
+		if (!heroImageUrl) {
+			const extractedImage = await extractFirstImage(post.markdown);
+			heroImageUrl = extractedImage ? normalizeImageUrl(extractedImage, baseUrl) : null;
+		} else {
+			heroImageUrl = normalizeImageUrl(heroImageUrl, baseUrl);
+		}
+
+		const feedItem: any = {
 			title: post.title,
 			description: description || post.title,
 			url: `${baseUrl}/${post.slug}`,
 			guid: post.slug,
 			date: post.publishedAt,
 			author: "jokull@solberg.is (Jökull Sólberg)",
-		});
+		};
+
+		// Add hero image as enclosure if available
+		if (heroImageUrl) {
+			feedItem.enclosure = {
+				url: heroImageUrl,
+				type: 'image/jpeg', // Default to JPEG, RSS readers are flexible
+			};
+		}
+
+		feed.item(feedItem);
 	}
 
 	return new Response(feed.xml({ indent: true }), {
