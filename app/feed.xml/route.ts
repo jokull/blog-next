@@ -7,8 +7,9 @@ import { extractFirstImage, normalizeImageUrl } from "@/lib/mdx-image-extractor"
 import { Post } from "@/schema";
 
 export async function GET() {
-	const baseUrl =
-		env.VERCEL_PROJECT_PRODUCTION_URL ?? `http://localhost:${process.env.PORT || 3000}`;
+	const baseUrl = env.VERCEL_PROJECT_PRODUCTION_URL
+		? `https://${env.VERCEL_PROJECT_PRODUCTION_URL}`
+		: `http://localhost:${process.env.PORT || 3000}`;
 
 	const feed = new RSS({
 		title: "Jökull Sólberg",
@@ -35,7 +36,7 @@ export async function GET() {
 	for (const post of posts) {
 		// Extract first paragraph as description
 		const description = await extractFirstParagraph(post.markdown);
-		
+
 		// Get hero image from database or extract from markdown
 		let heroImageUrl: string | null = post.heroImage;
 		if (!heroImageUrl) {
@@ -73,23 +74,23 @@ export async function GET() {
 }
 
 function getMimeType(url: string): string {
-	const extension = url.split('.').pop()?.toLowerCase();
-	
+	const extension = url.split(".").pop()?.toLowerCase();
+
 	switch (extension) {
-		case 'jpg':
-		case 'jpeg':
-			return 'image/jpeg';
-		case 'png':
-			return 'image/png';
-		case 'gif':
-			return 'image/gif';
-		case 'webp':
-			return 'image/webp';
-		case 'svg':
-			return 'image/svg+xml';
-		case 'avif':
-			return 'image/avif';
+		case "jpg":
+		case "jpeg":
+			return "image/jpeg";
+		case "png":
+			return "image/png";
+		case "gif":
+			return "image/gif";
+		case "webp":
+			return "image/webp";
+		case "svg":
+			return "image/svg+xml";
+		case "avif":
+			return "image/avif";
 		default:
-			return 'image/jpeg'; // Fallback to JPEG
+			return "image/jpeg"; // Fallback to JPEG
 	}
 }
