@@ -75,11 +75,7 @@ export function CommentItem({ comment, isAdmin, currentUsername }: CommentItemPr
 							{comment.authorGithubUsername}
 						</a>
 						<span className="text-muted-foreground text-sm">
-							{new Date(comment.createdAt).toLocaleDateString(undefined, {
-								year: "numeric",
-								month: "long",
-								day: "numeric",
-							})}
+							{new Date(comment.createdAt).toLocaleDateString()}
 						</span>
 						{canEdit && (
 							<button
