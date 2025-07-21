@@ -58,7 +58,7 @@ export async function GET() {
 		if (heroImageUrl) {
 			feedItem.enclosure = {
 				url: heroImageUrl,
-				type: 'image/jpeg', // Default to JPEG, RSS readers are flexible
+				type: getMimeType(heroImageUrl),
 			};
 		}
 
@@ -70,4 +70,26 @@ export async function GET() {
 			"Content-Type": "application/rss+xml; charset=utf-8",
 		},
 	});
+}
+
+function getMimeType(url: string): string {
+	const extension = url.split('.').pop()?.toLowerCase();
+	
+	switch (extension) {
+		case 'jpg':
+		case 'jpeg':
+			return 'image/jpeg';
+		case 'png':
+			return 'image/png';
+		case 'gif':
+			return 'image/gif';
+		case 'webp':
+			return 'image/webp';
+		case 'svg':
+			return 'image/svg+xml';
+		case 'avif':
+			return 'image/avif';
+		default:
+			return 'image/jpeg'; // Fallback to JPEG
+	}
 }
