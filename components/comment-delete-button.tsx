@@ -17,11 +17,7 @@ export function CommentDeleteButton({ commentId }: CommentDeleteButtonProps) {
 			)
 		) {
 			startTransition(async () => {
-				try {
-					await deleteComment(commentId);
-				} catch (_error) {
-					alert("Failed to delete comment. Please try again.");
-				}
+				await deleteComment(commentId);
 			});
 		}
 	}
@@ -31,7 +27,7 @@ export function CommentDeleteButton({ commentId }: CommentDeleteButtonProps) {
 			type="button"
 			onClick={handleDelete}
 			disabled={isPending}
-			className="text-destructive text-sm hover:text-destructive/80 hover:underline disabled:opacity-50"
+			className="text-primary hover:text-danger hover:underline disabled:opacity-50"
 		>
 			{isPending ? "..." : "Delete"}
 		</button>

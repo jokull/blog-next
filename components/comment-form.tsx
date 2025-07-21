@@ -42,15 +42,13 @@ export function CommentForm({ postSlug, user }: CommentFormProps) {
 				value={newComment}
 				onChange={setNewComment}
 				isDisabled={!user}
-				placeholder={user ? "Write your comment..." : "Sign in to comment..."}
+				placeholder={
+					user
+						? "Markdown with codeblocks and syntax highlighting supported"
+						: "Sign in to comment..."
+				}
 				className="min-h-24"
 			/>
-
-			{user && (
-				<div className="text-muted-foreground text-xs">
-					Markdown with codeblocks and syntax highlighting supported
-				</div>
-			)}
 
 			<div className="flex items-center justify-between">
 				<div className="text-muted-foreground text-sm">

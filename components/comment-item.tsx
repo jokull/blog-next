@@ -67,7 +67,7 @@ export function CommentItem({ comment, isAdmin, currentUsername }: CommentItemPr
 							>
 								@{comment.authorGithubUsername}
 							</a>
-							<span className="text-muted-foreground text-sm">
+							<span className="text-muted-foreground">
 								{formatCommentDate(comment.createdAt)}
 							</span>
 						</div>
@@ -100,14 +100,14 @@ export function CommentItem({ comment, isAdmin, currentUsername }: CommentItemPr
 						>
 							{comment.authorGithubUsername}
 						</a>
-						<span className="text-muted-foreground text-sm">
+						<span className="text-muted-foreground">
 							{formatCommentDate(comment.createdAt)}
 						</span>
 						{canEdit && (
 							<button
 								type="button"
 								onClick={() => setIsEditing(true)}
-								className="text-primary text-sm hover:text-primary/80 hover:underline"
+								className="text-primary hover:text-primary/80 hover:underline"
 							>
 								Edit
 							</button>

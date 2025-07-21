@@ -22,7 +22,7 @@ export function CommentAdminToggle({ commentId, isHidden }: CommentAdminTogglePr
 			type="button"
 			onClick={handleToggle}
 			disabled={isPending}
-			className="text-primary text-sm hover:text-primary/80 hover:underline disabled:opacity-50"
+			className="text-primary hover:text-primary/80 hover:underline disabled:opacity-50"
 		>
 			{isPending ? "..." : isHidden ? "Show" : "Hide"}
 		</button>
