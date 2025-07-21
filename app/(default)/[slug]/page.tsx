@@ -105,7 +105,7 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
 	// Fetch comments for this post
 	const comments = await db.query.Comment.findMany({
 		where: eq(Comment.postSlug, slug),
-		orderBy: [desc(Comment.createdAt)],
+		orderBy: [Comment.createdAt], // Oldest first (chronological order)
 	});
 
 	// Pre-render markdown content for each comment
