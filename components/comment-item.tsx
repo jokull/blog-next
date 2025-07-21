@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { getRelativeTime } from "@/lib/relative-time";
 import { CommentAdminToggle } from "./comment-admin-toggle";
 import { CommentDeleteButton } from "./comment-delete-button";
 import { CommentEdit } from "./comment-edit";
@@ -17,6 +16,32 @@ interface CommentItemProps {
 	};
 	isAdmin: boolean;
 	currentUsername?: string;
+}
+
+function formatCommentDate(date: Date): string {
+	const today = new Date();
+	const yesterday = new Date(today);
+	yesterday.setDate(yesterday.getDate() - 1);
+
+	const isToday = date.toDateString() === today.toDateString();
+	const isYesterday = date.toDateString() === yesterday.toDateString();
+
+	const fullDate = date.toLocaleDateString("en", {
+		month: "long",
+		day: "numeric",
+		year: "numeric",
+	});
+
+	if (isToday) {
+		return `Today, ${fullDate}`;
+	}
+
+	if (isYesterday) {
+		return `Yesterday, ${fullDate}`;
+	}
+
+	// For all other dates, just return the full date
+	return fullDate;
 }
 
 export function CommentItem({ comment, isAdmin, currentUsername }: CommentItemProps) {
@@ -43,7 +68,7 @@ export function CommentItem({ comment, isAdmin, currentUsername }: CommentItemPr
 								@{comment.authorGithubUsername}
 							</a>
 							<span className="text-muted-foreground text-sm">
-								{getRelativeTime(comment.createdAt)}
+								{formatCommentDate(comment.createdAt)}
 							</span>
 						</div>
 						<CommentEdit
@@ -76,7 +101,7 @@ export function CommentItem({ comment, isAdmin, currentUsername }: CommentItemPr
 							{comment.authorGithubUsername}
 						</a>
 						<span className="text-muted-foreground text-sm">
-							{getRelativeTime(comment.createdAt)}
+							{formatCommentDate(comment.createdAt)}
 						</span>
 						{canEdit && (
 							<button
