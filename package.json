@@ -55,6 +55,7 @@
 		"@types/node": "^22.16.5",
 		"@types/react": "^19.1.8",
 		"@types/react-dom": "^19.1.6",
+		"@types/rss": "^0.0.32",
 		"drizzle-kit": "^0.31.4",
 		"js-yaml": "^4.1.0",
 		"postcss": "^8.5.6",
