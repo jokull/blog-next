@@ -1,3 +1,4 @@
+import { env } from "@/env";
 import { desc, isNotNull } from "drizzle-orm";
 import { type NextRequest, NextResponse } from "next/server";
 import { groupBy, pipe } from "remeda";
@@ -10,7 +11,9 @@ export async function GET(_request: NextRequest) {
 		orderBy: [desc(Post.publishedAt)],
 	});
 
-	const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://blog-shud.vercel.app";
+	const baseUrl = env.VERCEL_PROJECT_PRODUCTION_URL
+		? `https://${env.VERCEL_PROJECT_PRODUCTION_URL}`
+		: "https://blog-shud.vercel.app";
 
 	// Group posts by year
 	const postsByYear = pipe(
@@ -41,7 +44,8 @@ export async function GET(_request: NextRequest) {
 	return new NextResponse(markdown, {
 		headers: {
 			"Content-Type": "text/plain; charset=utf-8",
-			"Cache-Control": "public, max-age=3600, s-maxage=3600, stale-while-revalidate=86400",
+			"Cache-Control":
+				"public, max-age=3600, s-maxage=3600, stale-while-revalidate=86400",
 		},
 	});
 }

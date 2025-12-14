@@ -1,3 +1,12 @@
+import { getGithubUser, getSession, isAdmin } from "@/auth";
+import { CommentsSection } from "@/components/comments-section";
+import { ClientErrorBoundary } from "@/components/error-boundary";
+import { db } from "@/drizzle.config";
+import { env } from "@/env";
+import { extractFirstParagraph } from "@/lib/mdx-content-utils";
+import { normalizeImageUrl } from "@/lib/mdx-image-extractor";
+import { components } from "@/mdx-components";
+import { Comment, Post } from "@/schema";
 import { compile, run } from "@mdx-js/mdx";
 import { eq, isNotNull } from "drizzle-orm";
 import type { Metadata } from "next";
@@ -5,14 +14,6 @@ import { notFound } from "next/navigation";
 import { cache } from "react";
 import * as runtime from "react/jsx-runtime";
 import remarkGfm from "remark-gfm";
-import { getGithubUser, getSession, isAdmin } from "@/auth";
-import { CommentsSection } from "@/components/comments-section";
-import { ClientErrorBoundary } from "@/components/error-boundary";
-import { db } from "@/drizzle.config";
-import { extractFirstParagraph } from "@/lib/mdx-content-utils";
-import { normalizeImageUrl } from "@/lib/mdx-image-extractor";
-import { components } from "@/mdx-components";
-import { Comment, Post } from "@/schema";
 import { ClipboardCopyButton } from "./_components/clipboard-copy-button";
 
 // This enables dynamic rendering for comments
@@ -50,7 +51,9 @@ export async function generateMetadata({
 	const post = await getPost(slug);
 
 	const description = await extractFirstParagraph(post.markdown);
-	const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://blog-shud.vercel.app";
+	const baseUrl = env.VERCEL_PROJECT_PRODUCTION_URL
+		? `https://${env.VERCEL_PROJECT_PRODUCTION_URL}`
+		: "https://blog-shud.vercel.app";
 
 	const metadata: Metadata = {
 		title: post.title,
@@ -87,7 +90,11 @@ export async function generateMetadata({
 	return metadata;
 }
 
-export default async function Page({ params }: { params: Promise<{ slug: string }> }) {
+export default async function Page({
+	params,
+}: {
+	params: Promise<{ slug: string }>;
+}) {
 	const { slug } = await params;
 	const post = await getPost(slug);
 
@@ -176,7 +183,9 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
 						dateStyle: "long",
 					})}
 				</p>
-				<ClipboardCopyButton text={post.markdown}>Copy as markdown</ClipboardCopyButton>
+				<ClipboardCopyButton text={post.markdown}>
+					Copy as markdown
+				</ClipboardCopyButton>
 			</div>
 			<ClientErrorBoundary>{mdx}</ClientErrorBoundary>
 
