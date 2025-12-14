@@ -9,7 +9,7 @@ The key technical innovation is server-side syntax highlighting using Shiki, whi
 - **Server-side syntax highlighting** - Shiki processes code highlighting in React Server Components, eliminating client-side JavaScript for code blocks
 - **Monaco-based markdown editor** - Full-featured web editor with live preview and syntax highlighting
 - **Turso database** - Edge-optimized LibSQL database with Drizzle ORM
-- **Biome 2.0 tooling** - Fast linting and formatting with type-aware analysis
+- **oxlint and oxfmt** - Fast linting and formatting with type-aware analysis
 - **Tailwind CSS v4** - Latest CSS framework with improved performance
 - **MDX support** - Markdown with embedded React components
 
@@ -19,7 +19,7 @@ The key technical innovation is server-side syntax highlighting using Shiki, whi
 - **Database:** Turso (LibSQL) with Drizzle ORM
 - **Styling:** Tailwind CSS v4
 - **Content:** MDX with server-side Shiki syntax highlighting
-- **Tooling:** Biome 2.0, TypeScript, Bun
+- **Tooling:** oxlint, oxfmt, TypeScript, Bun
 - **Editor:** Monaco Editor for markdown editing
 
 ## Getting Started

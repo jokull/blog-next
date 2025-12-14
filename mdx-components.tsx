@@ -103,7 +103,7 @@ export const components: Record<string, FC<any>> = {
 					)}
 					<code
 						className="shiki css-variables inline text-[0.805rem]"
-						// biome-ignore lint/security/noDangerouslySetInnerHtml: I know what I'm doing
+						// eslint-disable-next-line react/no-danger -- I know what I'm doing
 						dangerouslySetInnerHTML={{ __html: code }}
 					/>
 				</>

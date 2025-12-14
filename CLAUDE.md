@@ -18,7 +18,7 @@ This is a Next.js 15 blog application with server-side rendering and a Monaco-ba
 
 - **Next.js 15** with App Router and React Server Components
 - **Turso (LibSQL)** database with Drizzle ORM
-- **Biome 2.0** for linting and formatting (tab indentation, 100 char line width)
+- **oxlint and oxfmt** for linting and formatting (tab indentation, 100 char line width, type-aware linting)
 - **MDX** with server-side Shiki syntax highlighting for zero-JS code blocks
 - **Tailwind CSS v4** for styling
 - **Monaco Editor** for markdown editing
@@ -59,5 +59,5 @@ GitHub OAuth-based authentication with hard-coded email check (`jokull@solberg.i
 - Uses `bun` as package manager
 - Turbo mode enabled for faster development
 - Database runs locally via Turso CLI
-- Biome configured with strict TypeScript rules and Tailwind class sorting
+- oxlint configured with type-aware linting and strict TypeScript rules; oxfmt handles formatting
 - Custom fonts: Inter (sans), Lora (serif), Iosevka (mono)
