@@ -1,5 +1,5 @@
 import { compile, run } from "@mdx-js/mdx";
-import { desc, eq, isNotNull } from "drizzle-orm";
+import { eq, isNotNull } from "drizzle-orm";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { cache } from "react";
@@ -55,6 +55,11 @@ export async function generateMetadata({
 	const metadata: Metadata = {
 		title: post.title,
 		description: description.substring(0, 160),
+		alternates: {
+			types: {
+				"text/plain": `${baseUrl}/${post.slug}.md`,
+			},
+		},
 	};
 
 	if (post.heroImage) {

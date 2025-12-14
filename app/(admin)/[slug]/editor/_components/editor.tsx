@@ -4,17 +4,14 @@ import { Portal } from "@headlessui/react";
 import { default as MonacoEditor } from "@monaco-editor/react";
 import { useDebouncedCallback } from "@tanstack/react-pacer/debouncer";
 import type { InferSelectModel } from "drizzle-orm";
-import { createInsertSchema } from "drizzle-zod";
 import { type ReactNode, useCallback, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectItem } from "@/components/ui/select";
-import { Post } from "@/schema";
+import type { Post } from "@/schema";
 import { previewPost, togglePublishPost, updatePost } from "../server";
 import { DateInput } from "./date-input";
 import { Preview } from "./preview";
-
-const postSchema = createInsertSchema(Post);
 
 export function Editor({ mdx, ...props }: { post: InferSelectModel<typeof Post>; mdx: ReactNode }) {
 	const [post, setPost] = useState({
@@ -83,9 +80,8 @@ export function Editor({ mdx, ...props }: { post: InferSelectModel<typeof Post>;
 						<Select
 							selectedKey={post.locale}
 							onSelectionChange={(value) => {
-								const localeResult = postSchema.shape.locale.safeParse(value);
-								if (localeResult.data) {
-									setPost({ ...post, locale: localeResult.data });
+								if (value === "is" || value === "en") {
+									setPost({ ...post, locale: value });
 								}
 							}}
 							placeholder="Select language"

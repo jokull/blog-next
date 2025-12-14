@@ -9,7 +9,12 @@ export default {
 		contentDispositionType: "inline",
 		contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
 	},
-	eslint: {
-		ignoreDuringBuilds: true,
+	async rewrites() {
+		return [
+			{
+				source: "/:slug.md",
+				destination: "/api/markdown/:slug",
+			},
+		];
 	},
 } satisfies NextConfig;
