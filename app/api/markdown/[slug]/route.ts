@@ -4,11 +4,12 @@ import { cache } from "react";
 import { db } from "../../../../drizzle.config";
 import { Post } from "../../../../schema";
 
-const getPost = cache(async (slug: string) => {
-	return await db.query.Post.findFirst({
-		where: eq(Post.slug, slug),
-	});
-});
+const getPost = cache(
+	async (slug: string) =>
+		await db.query.Post.findFirst({
+			where: eq(Post.slug, slug),
+		}),
+);
 
 export async function GET(
 	_request: NextRequest,
@@ -23,8 +24,18 @@ export async function GET(
 		return new NextResponse("Not Found", { status: 404 });
 	}
 
-	// Return raw markdown with text/plain mimetype
-	return new NextResponse(post.markdown, {
+	// Format the date as YYYY-MM-DD
+	const formattedDate = post.publicAt.toISOString().split("T")[0];
+
+	// Create a proper markdown document with H1 title and date
+	const markdownDocument = `# ${post.title}
+
+${formattedDate}
+
+${post.markdown}`;
+
+	// Return markdown document with text/plain mimetype
+	return new NextResponse(markdownDocument, {
 		headers: {
 			"Content-Type": "text/plain; charset=utf-8",
 			"Cache-Control": "public, max-age=3600, s-maxage=3600, stale-while-revalidate=86400",

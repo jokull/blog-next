@@ -9,7 +9,8 @@
 		"format-and-lint": "oxlint -c .config/.oxlintrc.json --type-aware --type-check --deny-warnings && oxfmt -c .config/.oxfmtrc.json --check .",
 		"format-and-lint:fix": "oxlint -c .config/.oxlintrc.json --type-aware --type-check --fix && oxfmt -c .config/.oxfmtrc.json .",
 		"generate:migration": "drizzle-kit generate",
-		"run:migration": "drizzle-kit up"
+		"run:migration": "drizzle-kit up",
+		"postinstall": "lefthook install"
 	},
 	"dependencies": {
 		"@headlessui/react": "^2.2.4",
@@ -57,6 +58,7 @@
 		"@types/rss": "^0.0.32",
 		"drizzle-kit": "^0.31.8",
 		"js-yaml": "^4.1.0",
+		"lefthook": "^2.0.12",
 		"oxfmt": "^0.15.0",
 		"oxlint": "^1.30.0",
 		"oxlint-tsgolint": "^0.8.3",
