@@ -53,7 +53,7 @@ export async function requireAuth(currentUrl?: string) {
 	if (!session.githubUsername) {
 		const headersList = await headers();
 		const host = headersList.get("host");
-		const callbackUrl = `https://${host}/callback?next=${encodeURIComponent(currentUrl || "/")}`;
+		const callbackUrl = `https://${host}/callback?next=${encodeURIComponent(currentUrl ?? "/")}`;
 		const github = getOauthClient(callbackUrl);
 
 		const state = generateState();

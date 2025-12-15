@@ -61,7 +61,7 @@ export function DateInput({ value, onChange, ...props }: DateInputProps) {
 		const parsed = parseDate(inputValue);
 		if (!parsed) {
 			const fallbackDate = value ? parseDate(value) : new Date();
-			const validDate = fallbackDate || new Date();
+			const validDate = fallbackDate ?? new Date();
 			const dateString = formatDate(validDate);
 
 			setInputValue(dateString);

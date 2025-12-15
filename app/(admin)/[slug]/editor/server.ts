@@ -36,7 +36,7 @@ export async function togglePublishPost(slug: string) {
 
 	const newMarkdown = isCurrentlyPublished
 		? post.markdown
-		: post.previewMarkdown || post.markdown;
+		: (post.previewMarkdown ?? post.markdown);
 	const heroImage = newMarkdown ? await extractFirstImage(newMarkdown) : post.heroImage;
 
 	await db
@@ -66,7 +66,7 @@ export async function updatePost(
 	await requireAuth();
 	const post = await getPostOrThrow(slug);
 
-	const newMarkdown = previewMarkdown || post.markdown;
+	const newMarkdown = previewMarkdown ?? post.markdown;
 	const heroImage = newMarkdown ? await extractFirstImage(newMarkdown) : post.heroImage;
 
 	await db

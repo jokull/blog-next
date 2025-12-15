@@ -48,7 +48,7 @@ const TextField = ({
 				"group flex flex-col gap-y-1 *:data-[slot=label]:font-medium",
 			)}
 		>
-			{!props.children ? (
+			{props.children ?? (
 				<>
 					{label && <Label>{label}</Label>}
 					<FieldGroup
@@ -85,8 +85,6 @@ const TextField = ({
 					{description && <Description>{description}</Description>}
 					<FieldError>{errorMessage}</FieldError>
 				</>
-			) : (
-				props.children
 			)}
 		</TextFieldPrimitive>
 	);
