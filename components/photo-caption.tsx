@@ -16,7 +16,7 @@ export function PhotoCaption({
 			<img
 				className={`${fancy ? "rounded-lg shadow-lg" : ""} !my-2`}
 				src={url}
-				alt={caption?.toString() || ""}
+				alt={typeof caption === "string" ? caption : ""}
 			/>
 
 			{caption &&

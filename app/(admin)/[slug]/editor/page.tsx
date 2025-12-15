@@ -16,43 +16,37 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
 	await requireAdmin(`/${slug}/editor`);
 
 	let post = await db.query.Post.findFirst({ where: eq(Post.slug, slug) });
-	if (!post) {
-		post = await db
-			.insert(Post)
-			.values({
-				slug,
-				title: "New Post",
-				markdown: "# New Post",
-				publicAt: new Date(),
-				createdAt: new Date(),
-				publishedAt: new Date(),
-			})
-			.returning()
-			.get();
-	}
+	post ??= await db
+		.insert(Post)
+		.values({
+			slug,
+			title: "New Post",
+			markdown: "# New Post",
+			publicAt: new Date(),
+			createdAt: new Date(),
+			publishedAt: new Date(),
+		})
+		.returning()
+		.get();
 
 	let mdx: ReactElement | null = null;
 	let mdxError: ReactNode | null = null;
 	try {
 		const code = String(
-			await compile(post.previewMarkdown || post.markdown, {
+			await compile(post.previewMarkdown ?? post.markdown, {
 				outputFormat: "function-body",
 			}),
 		);
-		mdx = (
-			await run(code, {
-				...runtime,
-				baseUrl: import.meta.url,
-			})
-		).default({ components });
+		const module = (await run(code, {
+			...runtime,
+			baseUrl: import.meta.url,
+		})) as { default: (props: { components: typeof components }) => React.ReactElement };
+		mdx = module.default({ components });
 	} catch (error: unknown) {
 		mdxError = <div>{String(error)}</div>;
 	}
 
 	return (
-		<Editor
-			post={post}
-			mdx={mdxError ? mdxError : <ClientErrorBoundary>{mdx}</ClientErrorBoundary>}
-		/>
+		<Editor post={post} mdx={mdxError ?? <ClientErrorBoundary>{mdx}</ClientErrorBoundary>} />
 	);
 }

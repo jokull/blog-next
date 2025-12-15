@@ -8,6 +8,7 @@ export default {
 	images: {
 		contentDispositionType: "inline",
 		contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
+		qualities: [75, 80],
 	},
 	async rewrites() {
 		return [

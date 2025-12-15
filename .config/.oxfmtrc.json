@@ -12,12 +12,5 @@
 	"bracketSameLine": false,
 	"arrowParens": "always",
 	"endOfLine": "lf",
-	"ignorePatterns": [
-		"node_modules",
-		".next",
-		"out",
-		"dist",
-		"build",
-		".turbo"
-	]
+	"ignorePatterns": ["node_modules", ".next", "out", "dist", "build", ".turbo"]
 }

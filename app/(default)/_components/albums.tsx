@@ -11,7 +11,7 @@ export async function Albums() {
 		cache: "no-cache",
 	})
 		.then((r) => r.json())
-		.then(z.array(albumSchema).parse)
+		.then((data) => z.array(albumSchema).parse(data))
 		.catch(() => []);
 
 	return (

@@ -1,5 +1,5 @@
 import { desc, isNotNull } from "drizzle-orm";
-import RSS from "rss";
+import RSS, { type ItemOptions } from "rss";
 import { db } from "@/drizzle.config";
 import { env } from "@/env";
 import { extractFirstParagraph } from "@/lib/mdx-content-utils";
@@ -9,7 +9,7 @@ import { Post } from "@/schema";
 export async function GET() {
 	const baseUrl = env.VERCEL_PROJECT_PRODUCTION_URL
 		? `https://${env.VERCEL_PROJECT_PRODUCTION_URL}`
-		: `http://localhost:${process.env.PORT || 3000}`;
+		: `http://localhost:${process.env.PORT ?? 3000}`;
 
 	const feed = new RSS({
 		title: "Jökull Sólberg",
@@ -46,22 +46,22 @@ export async function GET() {
 			heroImageUrl = normalizeImageUrl(heroImageUrl, baseUrl);
 		}
 
-		const feedItem: any = {
+		const feedItem: ItemOptions = {
 			title: post.title,
 			description: description || post.title,
 			url: `${baseUrl}/${post.slug}`,
 			guid: post.slug,
 			date: post.publishedAt,
 			author: "jokull@solberg.is (Jökull Sólberg)",
+			...(heroImageUrl
+				? {
+						enclosure: {
+							url: heroImageUrl,
+							type: getMimeType(heroImageUrl),
+						},
+					}
+				: {}),
 		};
-
-		// Add hero image as enclosure if available
-		if (heroImageUrl) {
-			feedItem.enclosure = {
-				url: heroImageUrl,
-				type: getMimeType(heroImageUrl),
-			};
-		}
 
 		feed.item(feedItem);
 	}

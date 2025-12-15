@@ -46,7 +46,11 @@ export function HeroPostCard({
 					{isLocalImage ? (
 						<div className="h-full w-full">
 							<Image
-								src={require(`../assets/images/${imageSrc}`)}
+								src={
+									require(
+										`../assets/images/${imageSrc}`,
+									) as import("next/image").StaticImageData
+								}
 								alt={title}
 								fill
 								className="object-cover"

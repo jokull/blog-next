@@ -9,14 +9,18 @@ export function ClipboardCopyButton({ text, children }: { text: string; children
 		try {
 			await navigator.clipboard.writeText(text);
 			setCopied(true);
-			setTimeout(() => setCopied(false), 2000); // Reset after 2 seconds
+			setTimeout(() => {
+				setCopied(false);
+			}, 2000); // Reset after 2 seconds
 		} catch (_err) {}
 	}
 
 	return (
 		<button
 			type="button"
-			onClick={handleCopy}
+			onClick={() => {
+				void handleCopy();
+			}}
 			className="text-blue-500 text-xs hover:underline focus:outline-none"
 		>
 			{copied ? "Copied!" : children}

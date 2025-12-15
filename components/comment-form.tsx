@@ -52,11 +52,16 @@ export function CommentForm({ postSlug, user }: CommentFormProps) {
 
 			<div className="flex items-center justify-between">
 				<div className="text-muted-foreground text-sm">
-					{user ? <span>Commenting as @{user.githubUsername}</span> : <span></span>}
+					{user ? <span>Commenting as @{user.githubUsername}</span> : <span />}
 				</div>
 
 				{user ? (
-					<Button onClick={handleSubmit} isDisabled={!newComment.trim() || isPending}>
+					<Button
+						onClick={() => {
+							void handleSubmit();
+						}}
+						isDisabled={!newComment.trim() || isPending}
+					>
 						{isPending ? "Submitting..." : "Submit"}
 					</Button>
 				) : (

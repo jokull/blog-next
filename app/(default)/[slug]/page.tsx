@@ -90,11 +90,7 @@ export async function generateMetadata({
 	return metadata;
 }
 
-export default async function Page({
-	params,
-}: {
-	params: Promise<{ slug: string }>;
-}) {
+export default async function Page({ params }: { params: Promise<{ slug: string }> }) {
 	const { slug } = await params;
 	const post = await getPost(slug);
 
@@ -109,7 +105,7 @@ export default async function Page({
 			email: "", // We don't need email for comments
 			githubId: githubUser.id,
 			githubUsername: githubUser.login,
-			name: githubUser.name || githubUser.login,
+			name: githubUser.name ?? githubUser.login,
 			avatarUrl: githubUser.avatar_url,
 		};
 	}
@@ -132,12 +128,13 @@ export default async function Page({
 						remarkPlugins: [remarkGfm],
 					}),
 				);
-				renderedContent = (
-					await run(code, {
-						...runtime,
-						baseUrl: import.meta.url,
-					})
-				).default({ components });
+				const module = (await run(code, {
+					...runtime,
+					baseUrl: import.meta.url,
+				})) as {
+					default: (props: { components: typeof components }) => React.ReactElement;
+				};
+				renderedContent = module.default({ components });
 			} catch {
 				renderedContent = null;
 			}
@@ -163,12 +160,11 @@ export default async function Page({
 				remarkPlugins: [remarkGfm],
 			}),
 		);
-		mdx = (
-			await run(code, {
-				...runtime,
-				baseUrl: import.meta.url,
-			})
-		).default({ components });
+		const module = (await run(code, {
+			...runtime,
+			baseUrl: import.meta.url,
+		})) as { default: (props: { components: typeof components }) => React.ReactElement };
+		mdx = module.default({ components });
 	} catch {
 		mdx = null;
 	}
@@ -183,9 +179,7 @@ export default async function Page({
 						dateStyle: "long",
 					})}
 				</p>
-				<ClipboardCopyButton text={post.markdown}>
-					Copy as markdown
-				</ClipboardCopyButton>
+				<ClipboardCopyButton text={post.markdown}>Copy as markdown</ClipboardCopyButton>
 			</div>
 			<ClientErrorBoundary>{mdx}</ClientErrorBoundary>
 

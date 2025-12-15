@@ -16,12 +16,12 @@ import { Preview } from "./preview";
 export function Editor({ mdx, ...props }: { post: InferSelectModel<typeof Post>; mdx: ReactNode }) {
 	const [post, setPost] = useState({
 		...props.post,
-		previewMarkdown: props.post.previewMarkdown || props.post.markdown,
+		previewMarkdown: props.post.previewMarkdown ?? props.post.markdown,
 	});
 
 	const debouncedSavePreview = useDebouncedCallback(
 		(value: string) => {
-			previewPost(post.slug, { previewMarkdown: value });
+			void previewPost(post.slug, { previewMarkdown: value });
 		},
 		{
 			wait: 2000,
@@ -44,7 +44,9 @@ export function Editor({ mdx, ...props }: { post: InferSelectModel<typeof Post>;
 			}
 		};
 		window.addEventListener("beforeunload", handleBeforeUnload);
-		return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+		return () => {
+			window.removeEventListener("beforeunload", handleBeforeUnload);
+		};
 	}, [unsavedChanges]);
 
 	const onChange = useCallback(
@@ -92,9 +94,9 @@ export function Editor({ mdx, ...props }: { post: InferSelectModel<typeof Post>;
 						<Preview post={post}>{mdx}</Preview>
 						<form
 							className="contents"
-							onSubmit={async (event) => {
+							onSubmit={(event) => {
 								event.preventDefault();
-								await togglePublishPost(post.slug);
+								void togglePublishPost(post.slug);
 							}}
 						>
 							<Button type="submit" intent="secondary" className="group relative">
@@ -111,9 +113,9 @@ export function Editor({ mdx, ...props }: { post: InferSelectModel<typeof Post>;
 						</form>
 						<form
 							className="contents"
-							onSubmit={async (event) => {
+							onSubmit={(event) => {
 								event.preventDefault();
-								await updatePost(post.slug, {
+								void updatePost(post.slug, {
 									title: post.title,
 									publishedAt: post.publishedAt,
 									locale: post.locale,

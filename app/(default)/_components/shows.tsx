@@ -11,7 +11,7 @@ export async function RecentShows() {
 		cache: "no-cache",
 	})
 		.then((r) => r.json())
-		.then(z.array(showSchema).parse)
+		.then((data) => z.array(showSchema).parse(data))
 		.catch(() => []);
 
 	return (

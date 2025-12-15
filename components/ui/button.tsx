@@ -88,29 +88,25 @@ interface ButtonProps extends ButtonPrimitiveProps, VariantProps<typeof buttonSt
 	ref?: React.Ref<HTMLButtonElement>;
 }
 
-const Button = ({ className, intent, size, isCircle, ref, ...props }: ButtonProps) => {
-	return (
-		<ButtonPrimitive
-			ref={ref}
-			{...props}
-			className={composeRenderProps(className, (className, renderProps) =>
-				buttonStyles({
-					...renderProps,
-					intent,
-					size,
-					isCircle,
-					className,
-				}),
-			)}
-		>
-			{(values) => (
-				<>
-					{typeof props.children === "function" ? props.children(values) : props.children}
-				</>
-			)}
-		</ButtonPrimitive>
-	);
-};
+const Button = ({ className, intent, size, isCircle, ref, ...props }: ButtonProps) => (
+	<ButtonPrimitive
+		ref={ref}
+		{...props}
+		className={composeRenderProps(className, (className, renderProps) =>
+			buttonStyles({
+				...renderProps,
+				intent,
+				size,
+				isCircle,
+				className,
+			}),
+		)}
+	>
+		{(values) => (
+			<>{typeof props.children === "function" ? props.children(values) : props.children}</>
+		)}
+	</ButtonPrimitive>
+);
 
 export type { ButtonProps };
 export { Button, buttonStyles };

@@ -27,12 +27,18 @@ export function Preview({
 				className="contents"
 				onSubmit={(event) => {
 					event.preventDefault();
-					previewPost(post.slug, {
+					void previewPost(post.slug, {
 						previewMarkdown: post.previewMarkdown,
 					});
 				}}
 			>
-				<Button className="w-full" type="submit" onPress={() => setIsOpen(true)}>
+				<Button
+					className="w-full"
+					type="submit"
+					onPress={() => {
+						setIsOpen(true);
+					}}
+				>
 					Open Preview
 				</Button>
 			</form>
@@ -41,7 +47,13 @@ export function Preview({
 					<DialogTitle>Preview</DialogTitle>
 					<DialogBody>{children}</DialogBody>
 					<DialogActions>
-						<Button onPress={() => setIsOpen(false)}>Close</Button>
+						<Button
+							onPress={() => {
+								setIsOpen(false);
+							}}
+						>
+							Close
+						</Button>
 					</DialogActions>
 				</DialogContent>
 			</DialogOverlay>

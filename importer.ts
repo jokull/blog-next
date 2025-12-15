@@ -16,9 +16,16 @@ interface BlogPost {
 	content: string;
 }
 
+// Define the structure for frontmatter
+interface Frontmatter {
+	title?: string;
+	date?: string | Date;
+	isDraft?: boolean;
+}
+
 // Function to parse YAML frontmatter from markdown content
 function parseFrontmatter(content: string): {
-	frontmatter: any;
+	frontmatter: Frontmatter;
 	markdown: string;
 } {
 	const frontmatterRegex = /^---\n([\s\S]*?)\n---\n([\s\S]*)$/;
@@ -29,7 +36,7 @@ function parseFrontmatter(content: string): {
 	}
 
 	try {
-		const frontmatter = yaml.load(match[1]);
+		const frontmatter = yaml.load(match[1]) as Frontmatter;
 		// Clean up whitespace and linebreaks around the markdown
 		const markdown = match[2].trim();
 		return { frontmatter, markdown };
@@ -69,9 +76,9 @@ function scanBlogPosts(rootDir: string): BlogPost[] {
 				const { frontmatter, markdown } = parseFrontmatter(fileContent);
 
 				// Set default values if properties are missing
-				const title = frontmatter.title || "Untitled";
+				const title = frontmatter.title ?? "Untitled";
 				const date = frontmatter.date ? new Date(frontmatter.date) : new Date(0);
-				const isDraft = frontmatter.isDraft !== undefined ? frontmatter.isDraft : false;
+				const isDraft = frontmatter.isDraft ?? false;
 
 				posts.push({
 					slug: dir,
@@ -186,6 +193,6 @@ async function main() {
 }
 
 // Run the script
-main().catch((_error) => {
+main().catch((_error: unknown) => {
 	process.exit(1);
 });

@@ -1,4 +1,4 @@
-import type { Paragraph, Root } from "mdast";
+import type { Paragraph } from "mdast";
 import { fromMarkdown } from "mdast-util-from-markdown";
 import { mdxFromMarkdown } from "mdast-util-mdx";
 import { toString as mdastToString } from "mdast-util-to-string";
@@ -15,7 +15,7 @@ export async function extractFirstParagraph(markdown: string): Promise<string> {
 		const tree = fromMarkdown(markdown, {
 			extensions: [mdxjs()],
 			mdastExtensions: [mdxFromMarkdown()],
-		}) as Root;
+		});
 
 		let firstParagraph: string = "";
 

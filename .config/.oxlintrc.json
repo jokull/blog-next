@@ -1,5 +1,5 @@
 {
-	"$schema": "https://oxc.rs/schema/oxlintrc.json",
+	"$schema": "../node_modules/oxlint/configuration_schema.json",
 	"plugins": ["react", "jsx-a11y", "import", "typescript"],
 	"env": {
 		"browser": true,
@@ -44,17 +44,41 @@
 		"react/no-img-element": "off",
 		"react/no-children-prop": "off",
 		"react/self-closing-comp": "error",
-		"import/no-duplicates": "error"
+		"import/no-duplicates": "error",
+		"typescript/no-unsafe-argument": "error",
+		"typescript/no-unsafe-assignment": "error",
+		"typescript/no-unsafe-call": "error",
+		"typescript/no-unsafe-member-access": "error",
+		"typescript/no-unsafe-return": "error",
+		"typescript/no-unsafe-enum-comparison": "error",
+		"typescript/await-thenable": "error",
+		"typescript/no-for-in-array": "error",
+		"typescript/no-implied-eval": "error",
+		"typescript/no-misused-promises": "error",
+		"typescript/no-unnecessary-type-assertion": "error",
+		"typescript/restrict-plus-operands": "error",
+		"typescript/restrict-template-expressions": "error",
+		"typescript/no-confusing-void-expression": "warn",
+		"typescript/no-meaningless-void-operator": "error",
+		"typescript/no-mixed-enums": "error",
+		"typescript/no-redundant-type-constituents": "error",
+		"typescript/no-unnecessary-boolean-literal-compare": "warn",
+		"typescript/no-unnecessary-condition": "warn",
+		"typescript/no-unnecessary-type-arguments": "warn",
+		"typescript/prefer-includes": "error",
+		"typescript/prefer-nullish-coalescing": "warn",
+		"typescript/prefer-optional-chain": "error",
+		"typescript/prefer-return-this-type": "error",
+		"typescript/prefer-string-starts-ends-with": "error",
+		"typescript/require-array-sort-compare": "error",
+		"typescript/no-array-delete": "error",
+		"typescript/no-duplicate-type-constituents": "error",
+		"typescript/no-useless-template-literals": "error",
+		"typescript/prefer-find": "error",
+		"typescript/use-unknown-in-catch-callback-variable": "error"
 	},
 	"categories": {
 		"correctness": "warn"
 	},
-	"ignorePatterns": [
-		"node_modules",
-		".next",
-		"out",
-		"dist",
-		"build",
-		".turbo"
-	]
+	"ignorePatterns": ["node_modules", ".next", "out", "dist", "build", ".turbo"]
 }

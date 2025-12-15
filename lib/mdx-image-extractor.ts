@@ -1,4 +1,4 @@
-import type { Image, Root } from "mdast";
+import type { Image, Parent } from "mdast";
 import { fromMarkdown } from "mdast-util-from-markdown";
 import type { MdxJsxFlowElement } from "mdast-util-mdx";
 import { mdxFromMarkdown } from "mdast-util-mdx";
@@ -23,7 +23,7 @@ export async function extractFirstImage(markdown: string): Promise<string | null
 		const tree = fromMarkdown(markdown, {
 			extensions: [mdxjs()],
 			mdastExtensions: [mdxFromMarkdown()],
-		}) as Root;
+		});
 
 		let firstImageSrc: string | null = null;
 
@@ -38,7 +38,7 @@ export async function extractFirstImage(markdown: string): Promise<string | null
 				}
 			}
 
-			if (node.type === "mdxJsxFlowElement" && (node as MdxJsxFlowElement).name === "Image") {
+			if (node.type === "mdxJsxFlowElement" && node.name === "Image") {
 				const jsxNode = node as JSXImageNode;
 				const srcAttr = jsxNode.attributes?.find(
 					(attr) => attr.type === "mdxJsxAttribute" && attr.name === "src",
@@ -71,7 +71,7 @@ export async function extractFirstImage(markdown: string): Promise<string | null
 	}
 }
 
-function isTopLevel(parent: any, index: number | undefined): boolean {
+function isTopLevel(parent: Parent | undefined, index: number | undefined): boolean {
 	if (!parent || index === undefined) return false;
 
 	// If the parent is root, it's top level

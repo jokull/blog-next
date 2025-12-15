@@ -1,5 +1,5 @@
 pre-commit:
-  commands:
-    format-and-lint:
-      run: bun run format-and-lint:fix
-      stage_fixed: true
+    commands:
+        format-and-lint:
+            run: bun run format-and-lint:fix
+            stage_fixed: true

@@ -74,7 +74,9 @@ export function CommentItem({ comment, isAdmin, currentUsername }: CommentItemPr
 						<CommentEdit
 							commentId={comment.id}
 							initialContent={comment.content}
-							onCancel={() => setIsEditing(false)}
+							onCancel={() => {
+								setIsEditing(false);
+							}}
 						/>
 					</div>
 				</div>
@@ -106,7 +108,9 @@ export function CommentItem({ comment, isAdmin, currentUsername }: CommentItemPr
 						{canEdit && (
 							<button
 								type="button"
-								onClick={() => setIsEditing(true)}
+								onClick={() => {
+									setIsEditing(true);
+								}}
 								className="text-primary hover:text-primary/80 hover:underline"
 							>
 								Edit
@@ -121,7 +125,7 @@ export function CommentItem({ comment, isAdmin, currentUsername }: CommentItemPr
 						)}
 					</div>
 					<div className="max-w-none [&>*]:first:mt-0">
-						{comment.renderedContent || (
+						{comment.renderedContent ?? (
 							<div className="whitespace-pre-wrap">{comment.content}</div>
 						)}
 					</div>

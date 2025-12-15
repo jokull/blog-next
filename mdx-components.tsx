@@ -1,7 +1,7 @@
 import type { MDXComponents } from "mdx/types";
 import Image from "next/image";
 import Link from "next/link";
-import type { FC } from "react";
+import type { ComponentProps, ReactNode } from "react";
 import { codeToHtml, createCssVariablesTheme } from "shiki";
 
 import { ClipboardCopyButton } from "./app/(default)/[slug]/_components/clipboard-copy-button";
@@ -12,12 +12,30 @@ import { Card } from "./components/tweet-card";
 
 const cssVariablesTheme = createCssVariablesTheme({});
 
-export const components: Record<string, FC<any>> = {
+interface CodeProps {
+	children?: ReactNode;
+	className?: string;
+}
+
+interface ImgProps {
+	src: string;
+	alt?: string;
+	title?: string;
+}
+
+interface AnchorProps extends Omit<ComponentProps<typeof Link>, "href"> {
+	href?: string;
+}
+
+export const components: MDXComponents = {
+	// eslint-disable-next-line jsx-a11y/heading-has-content -- content is passed via props spread
 	h1: (props) => <h1 className="mb-7 text-balance font-semibold text-neutral-600" {...props} />,
 	h2: (props) => (
+		// eslint-disable-next-line jsx-a11y/heading-has-content -- content is passed via props spread
 		<h2 className="mt-14 mb-7 text-balance font-semibold text-neutral-600" {...props} />
 	),
 	h3: (props) => (
+		// eslint-disable-next-line jsx-a11y/heading-has-content -- content is passed via props spread
 		<h3 className="mt-14 mb-7 text-balance font-semibold text-neutral-600" {...props} />
 	),
 	ul: (props) => (
@@ -33,22 +51,20 @@ export const components: Record<string, FC<any>> = {
 		/>
 	),
 	li: (props) => <li className="pl-1.5" {...props} />,
-	a: ({ href, ...props }) => {
-		return (
-			<Link
-				className="break-words underline decoration-blue-300 decoration-from-font underline-offset-2 hover:decoration-blue-600 focus:outline-none focus-visible:rounded-xs focus-visible:ring-2 focus-visible:ring-current focus-visible:ring-opacity-50 focus-visible:ring-offset-2"
-				href={href}
-				draggable={false}
-				{...(href?.startsWith("https://")
-					? {
-							target: "_blank",
-							rel: "noopener noreferrer",
-						}
-					: {})}
-				{...props}
-			/>
-		);
-	},
+	a: ({ href, ...props }: AnchorProps) => (
+		<Link
+			className="break-words underline decoration-blue-300 decoration-from-font underline-offset-2 hover:decoration-blue-600 focus:outline-none focus-visible:rounded-xs focus-visible:ring-2 focus-visible:ring-current focus-visible:ring-opacity-50 focus-visible:ring-offset-2"
+			href={href ?? "#"}
+			draggable={false}
+			{...(href?.startsWith("https://")
+				? {
+						target: "_blank",
+						rel: "noopener noreferrer",
+					}
+				: {})}
+			{...props}
+		/>
+	),
 	strong: (props) => <strong className="font-bold" {...props} />,
 	p: (props) => <p className="mt-7 max-w-xl" {...props} />,
 	blockquote: (props) => (
@@ -63,7 +79,7 @@ export const components: Record<string, FC<any>> = {
 			{...props}
 		/>
 	),
-	code: async (props) => {
+	code: async (props: CodeProps) => {
 		if (typeof props.children === "string") {
 			// Check if this is a code block (multi-line) or inline code (single line)
 			const isCodeBlock = props.children.includes("\n") || props.children.length > 50;
@@ -114,8 +130,8 @@ export const components: Record<string, FC<any>> = {
 	},
 	Card,
 	Image,
-	img: async ({ src, alt, title }) => {
-		let img: React.ReactNode;
+	img: async ({ src, alt = "", title }: ImgProps) => {
+		let img: ReactNode;
 
 		if (src.startsWith("https://")) {
 			img = (
@@ -128,7 +144,9 @@ export const components: Record<string, FC<any>> = {
 			);
 		} else {
 			try {
-				const image = await import(`./assets/images/${src}`);
+				const image = (await import(`./assets/images/${src}`)) as {
+					default: import("next/image").StaticImageData;
+				};
 				img = (
 					<Image
 						key={src}
