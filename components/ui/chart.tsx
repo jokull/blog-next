@@ -1,4 +1,5 @@
-/* eslint-disable react/no-danger, @typescript-eslint/restrict-template-expressions, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-argument */
+import { useIsMobile } from "@/hooks/use-mobile";
+import { cx } from "@/lib/primitive";
 import {
 	createContext,
 	type ReactElement,
@@ -37,8 +38,6 @@ import type {
 } from "recharts/types/component/DefaultTooltipContent";
 import type { ContentType as TooltipContentType } from "recharts/types/component/Tooltip";
 import { twJoin, twMerge } from "tailwind-merge";
-import { useIsMobile } from "@/hooks/use-mobile";
-import { cx } from "@/lib/primitive";
 
 // #region Chart Types
 type ChartType = "default" | "stacked" | "percent";
@@ -270,6 +269,7 @@ const ChartStyle = ({ id, config }: { id: string; config: ChartConfig }) => {
 
 	return (
 		<style
+			// oxlint-disable-next-line no-danger
 			dangerouslySetInnerHTML={{
 				__html: Object.entries(THEMES)
 					.map(
@@ -355,6 +355,7 @@ const XAxis = ({
 			tickLine={false}
 			axisLine={false}
 			minTickGap={minTickGap}
+			domain={domain}
 			dataKey={layout === "horizontal" ? dataKey : undefined}
 			{...props}
 		/>
@@ -437,7 +438,7 @@ const ChartTooltipContent = <TValue extends ValueType, TName extends NameType>({
 			return null;
 		}
 
-		const key = `${labelKey ?? item.dataKey ?? item.name ?? "value"}`;
+		const key = String(labelKey ?? item.dataKey ?? item.name ?? "value");
 		const itemConfig = getPayloadConfigFromPayload(config, item, key);
 		const value =
 			!labelKey && typeof label === "string"
@@ -465,7 +466,7 @@ const ChartTooltipContent = <TValue extends ValueType, TName extends NameType>({
 		<div
 			ref={ref}
 			className={twMerge(
-				"grid min-w-[12rem] items-start rounded-lg bg-overlay/70 p-3 py-2 text-overlay-fg text-xs ring ring-current/10 backdrop-blur-lg",
+				"grid min-w-48 items-start rounded-lg bg-overlay/70 p-3 py-2 text-overlay-fg text-xs ring ring-current/10 backdrop-blur-lg",
 				className,
 			)}
 		>
@@ -479,9 +480,20 @@ const ChartTooltipContent = <TValue extends ValueType, TName extends NameType>({
 			)}
 			<div className="grid gap-3">
 				{payload.map((item, index) => {
-					const key = `${nameKey ?? item.name ?? item.dataKey ?? "value"}`;
+					const key = String(nameKey ?? item.name ?? item.dataKey ?? "value");
 					const itemConfig = getPayloadConfigFromPayload(config, item, key);
-					const indicatorColor = color ?? item.payload.fill ?? item.color;
+
+					// Extract fill from payload safely (recharts types payload as any)
+					const payloadData: unknown = item.payload;
+					const payloadFill =
+						typeof payloadData === "object" &&
+						payloadData !== null &&
+						"fill" in payloadData &&
+						typeof (payloadData as Record<string, unknown>).fill === "string"
+							? ((payloadData as Record<string, unknown>).fill as string)
+							: undefined;
+
+					const indicatorColor: string | undefined = color ?? payloadFill ?? item.color;
 
 					return (
 						<div
@@ -494,7 +506,7 @@ const ChartTooltipContent = <TValue extends ValueType, TName extends NameType>({
 							)}
 						>
 							{formatter && item?.value !== undefined && item.name ? (
-								formatter(item.value, item.name, item, index, item.payload)
+								formatter(item.value, item.name, item, index, payload)
 							) : (
 								<>
 									{itemConfig?.icon ? (
@@ -594,7 +606,7 @@ const ChartLegendContent = ({
 			selectionMode="single"
 		>
 			{payload.map((item: LegendPayload) => {
-				const key = `${nameKey ?? item.dataKey ?? "value"}`;
+				const key = String(nameKey ?? item.dataKey ?? "value");
 				const itemConfig = getPayloadConfigFromPayload(config, item, key);
 
 				return (
@@ -628,26 +640,29 @@ const ChartLegendContent = ({
 };
 
 export type {
-	ChartConfig,
-	ChartColorKeys,
-	ChartType,
-	ChartLayout,
-	IntervalType,
 	BaseChartProps,
-	ChartTooltipProps,
-	XAxisProps,
-	ChartLegendProps,
+	ChartColorKeys,
+	ChartConfig,
+	ChartLayout,
 	ChartLegendContentProps,
+	ChartLegendProps,
+	ChartTooltipProps,
+	ChartType,
+	IntervalType,
+	XAxisProps,
 };
 
 export {
-	Chart,
-	ChartLegend,
-	XAxis,
-	YAxis,
 	CartesianGrid,
+	Chart,
+	CHART_COLORS,
+	ChartLegend,
+	ChartLegendContent,
 	ChartTooltip,
 	ChartTooltipContent,
-	ChartLegendContent,
+	constructCategoryColors,
+	DEFAULT_COLORS,
+	getColorValue,
+	XAxis,
+	YAxis,
 };
-export { getColorValue, constructCategoryColors, DEFAULT_COLORS, CHART_COLORS };
