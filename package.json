@@ -3,7 +3,9 @@
 	"version": "0.1.0",
 	"private": true,
 	"scripts": {
-		"dev": "next dev --turbo",
+		"dev": "concurrently \"bun run dev:next\" \"bun run dev:db\"",
+		"dev:next": "next dev --turbo",
+		"dev:db": "turso dev --db-file database.db --port 9797",
 		"build": "next build",
 		"start": "next start",
 		"format-and-lint": "oxlint -c .config/.oxlintrc.json --type-aware --type-check --deny-warnings && oxfmt -c .config/.oxfmtrc.json --check .",
@@ -56,6 +58,7 @@
 		"@types/react": "^19.2.7",
 		"@types/react-dom": "^19.2.3",
 		"@types/rss": "^0.0.32",
+		"concurrently": "^9.1.0",
 		"drizzle-kit": "^0.31.8",
 		"js-yaml": "^4.1.1",
 		"lefthook": "^2.0.12",

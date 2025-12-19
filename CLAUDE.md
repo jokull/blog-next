@@ -4,11 +4,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Development Commands
 
-- **Start development server:** `bun dev` (uses Next.js 15 with Turbo mode)
+- **Start development server:** `bun dev` (orchestrates Next.js + Turso DB using concurrently)
+    - `bun run dev:next` - Run only Next.js dev server (with Turbo mode)
+    - `bun run dev:db` - Run only Turso local database
 - **Build:** `bun run build`
 - **Linting and formatting:** `bun run format-and-lint` (check only) or `bun run format-and-lint:fix` (fix issues)
 - **Database migrations:** `bun run generate:migration` (generate) and `bun run run:migration` (apply)
-- **Local database:** `turso dev --db-file database.db --port 9797`
 
 ## Architecture Overview
 
