@@ -1,48 +1,28 @@
 "use client";
 
-import { TextArea, TextField, type TextFieldProps } from "react-aria-components";
+import { TextArea, type TextAreaProps } from "react-aria-components";
 import { twJoin } from "tailwind-merge";
-import { composeTailwindRenderProps } from "@/lib/utils";
-import { Description, FieldError, type FieldProps, Label } from "./field";
+import { cx } from "@/lib/primitive";
 
-interface TextareaProps extends Omit<TextFieldProps, "className">, FieldProps {
-	className?: string | ((v: TextFieldProps) => string);
+export function Textarea({ className, ...props }: TextAreaProps) {
+	return (
+		<span data-slot="control" className="relative block w-full">
+			<TextArea
+				{...props}
+				className={cx(
+					twJoin([
+						"field-sizing-content relative block min-h-16 w-full appearance-none rounded-lg px-[calc(--spacing(3.5)-1px)] py-[calc(--spacing(2.5)-1px)] sm:px-[calc(--spacing(3)-1px)] sm:py-[calc(--spacing(1.5)-1px)]",
+						"text-base/6 text-fg placeholder:text-muted-fg sm:text-sm/6",
+						"border border-input enabled:hover:border-muted-fg/30",
+						"outline-hidden focus:border-ring/70 focus:ring-3 focus:ring-ring/20 focus:enabled:hover:border-ring/80",
+						"invalid:border-danger-subtle-fg/70 focus:invalid:border-danger-subtle-fg/70 focus:invalid:ring-danger-subtle-fg/20 invalid:enabled:hover:border-danger-subtle-fg/80 invalid:focus:enabled:hover:border-danger-subtle-fg/80",
+						"disabled:bg-muted forced-colors:in-disabled:text-[GrayText]",
+						"in-disabled:bg-muted forced-colors:in-disabled:text-[GrayText]",
+						"dark:scheme-dark",
+					]),
+					className,
+				)}
+			/>
+		</span>
+	);
 }
-
-const Textarea = ({
-	className,
-	placeholder,
-	label,
-	description,
-	errorMessage,
-	...props
-}: TextareaProps) => (
-	<TextField
-		{...props}
-		className={composeTailwindRenderProps(
-			className,
-			"group flex flex-col gap-y-1 *:data-[slot=label]:font-medium",
-		)}
-	>
-		{label && <Label>{label}</Label>}
-		<TextArea
-			placeholder={placeholder}
-			className={composeTailwindRenderProps(
-				className,
-				twJoin([
-					"field-sizing-content max-h-96 min-h-16 w-full min-w-0 rounded-lg border border-input px-2.5 py-2 text-base placeholder-muted-fg shadow-xs outline-hidden transition duration-200 sm:text-sm/6",
-					"focus:border-ring/70 focus:ring-3 focus:ring-ring/20",
-					"focus:invalid:border-danger/70 focus:invalid:ring-3 focus:invalid:ring-danger/20",
-					"invalid:border-danger/70",
-					"disabled:opacity-50 disabled:forced-colors:border-[GrayText]",
-					"hover:border-current/20 invalid:hover:border-danger/70",
-				]),
-			)}
-		/>
-		{description && <Description>{description}</Description>}
-		<FieldError>{errorMessage}</FieldError>
-	</TextField>
-);
-
-export type { TextareaProps };
-export { Textarea };

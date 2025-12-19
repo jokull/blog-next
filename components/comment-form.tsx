@@ -40,8 +40,10 @@ export function CommentForm({ postSlug, user }: CommentFormProps) {
 		<div className="space-y-3">
 			<Textarea
 				value={newComment}
-				onChange={setNewComment}
-				isDisabled={!user}
+				onChange={(e) => {
+					setNewComment(e.target.value);
+				}}
+				disabled={!user}
 				placeholder={
 					user
 						? "Markdown with codeblocks and syntax highlighting supported"

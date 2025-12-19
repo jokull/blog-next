@@ -30,7 +30,9 @@ export function CommentEdit({ commentId, initialContent, onCancel }: CommentEdit
 		<div className="space-y-3">
 			<Textarea
 				value={content}
-				onChange={setContent}
+				onChange={(e) => {
+					setContent(e.target.value);
+				}}
 				className="min-h-24"
 				placeholder="Edit your comment..."
 			/>

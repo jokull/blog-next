@@ -1,13 +1,13 @@
 import type { InferSelectModel } from "drizzle-orm";
 import { type ReactNode, useState } from "react";
+import { Modal, ModalOverlay } from "react-aria-components";
 import { Button } from "@/components/ui/button";
 import {
-	DialogActions,
+	Dialog,
 	DialogBody,
-	DialogContent,
-	DialogOverlay,
+	DialogFooter,
+	DialogHeader,
 	DialogTitle,
-	DialogTrigger,
 } from "@/components/ui/dialog";
 import type { Post } from "@/schema";
 import { previewPost } from "../server";
@@ -22,7 +22,7 @@ export function Preview({
 	const [isOpen, setIsOpen] = useState(false);
 
 	return (
-		<DialogTrigger isOpen={isOpen} onOpenChange={setIsOpen}>
+		<>
 			<form
 				className="contents"
 				onSubmit={(event) => {
@@ -42,21 +42,25 @@ export function Preview({
 					Open Preview
 				</Button>
 			</form>
-			<DialogOverlay>
-				<DialogContent>
-					<DialogTitle>Preview</DialogTitle>
-					<DialogBody>{children}</DialogBody>
-					<DialogActions>
-						<Button
-							onPress={() => {
-								setIsOpen(false);
-							}}
-						>
-							Close
-						</Button>
-					</DialogActions>
-				</DialogContent>
-			</DialogOverlay>
-		</DialogTrigger>
+			<ModalOverlay isOpen={isOpen} onOpenChange={setIsOpen} isDismissable>
+				<Modal>
+					<Dialog>
+						<DialogHeader>
+							<DialogTitle>Preview</DialogTitle>
+						</DialogHeader>
+						<DialogBody>{children}</DialogBody>
+						<DialogFooter>
+							<Button
+								onPress={() => {
+									setIsOpen(false);
+								}}
+							>
+								Close
+							</Button>
+						</DialogFooter>
+					</Dialog>
+				</Modal>
+			</ModalOverlay>
+		</>
 	);
 }

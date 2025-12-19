@@ -1,5 +1,13 @@
 import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
+export const Category = sqliteTable("category", {
+	slug: text("slug").notNull().primaryKey(),
+	label: text("label").notNull(),
+	createdAt: integer("created_at", { mode: "timestamp" })
+		.notNull()
+		.$default(() => new Date()),
+});
+
 export const Post = sqliteTable("post", {
 	slug: text("slug").notNull().primaryKey(),
 	title: text("title").notNull(),
@@ -15,6 +23,7 @@ export const Post = sqliteTable("post", {
 		.default("en")
 		.notNull(),
 	heroImage: text("hero_image"),
+	categorySlug: text("category_slug").references(() => Category.slug),
 });
 
 export const Comment = sqliteTable("comment", {

@@ -51,6 +51,11 @@ export async function getGithubUser(username: string) {
 export async function requireAuth(currentUrl?: string) {
 	const session = await getSession();
 	if (!session.githubUsername) {
+		// In development, redirect to dev auth route handler
+		if (env.NODE_ENV === "development") {
+			redirect(`/api/dev-auth?next=${encodeURIComponent(currentUrl ?? "/")}`);
+		}
+
 		const headersList = await headers();
 		const host = headersList.get("host");
 		const callbackUrl = `https://${host}/callback?next=${encodeURIComponent(currentUrl ?? "/")}`;

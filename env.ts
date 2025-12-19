@@ -15,6 +15,7 @@ export const env = createEnv({
 		VERCEL_ENV: z.enum(["development", "preview", "production"]).optional(),
 		VERCEL_URL: z.string().optional(),
 		VERCEL_PROJECT_PRODUCTION_URL: z.string().optional(),
+		ONEDOLLARSTATS_API_KEY: z.string().min(1),
 	},
 	experimental__runtimeEnv: {},
 });
