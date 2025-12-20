@@ -1,11 +1,11 @@
 import { requireAdmin } from "@/auth";
 import { db } from "@/drizzle.config";
-import { Post, Category } from "@/schema";
-import { desc, sql, asc } from "drizzle-orm";
+import { createStatsClient } from "@/lib/onedollarstats";
+import { Category, Post } from "@/schema";
+import { asc, desc, sql } from "drizzle-orm";
 import { CategoryManager } from "./_components/category-manager";
 import { PostsTable } from "./_components/posts-table";
 import { VisitsChartClient } from "./_components/visits-chart-client";
-import { createStatsClient } from "@/lib/onedollarstats";
 
 export const dynamic = "force-dynamic";
 
@@ -14,7 +14,7 @@ export default async function AdminPage() {
 
 	// Fetch all posts (drafts + published)
 	const posts = await db.query.Post.findMany({
-		orderBy: [desc(Post.modifiedAt), desc(Post.publishedAt)],
+		orderBy: [desc(Post.publishedAt)],
 	});
 
 	// Fetch all categories

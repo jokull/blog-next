@@ -130,7 +130,7 @@ GitHub OAuth-based authentication with hard-coded email check (`jokull@solberg.i
 ### App Structure
 
 - `app/(default)/` - Public blog routes
-- `app/(admin)/` - Admin routes requiring authentication
+- `app/admin/` - Admin dashboard (requires authentication)
 - `app/(admin)/[slug]/editor/` - Monaco-based markdown editor with live preview
 - `components/` - Shared React components
 - `schema.ts` - Drizzle database schema
@@ -141,7 +141,7 @@ GitHub OAuth-based authentication with hard-coded email check (`jokull@solberg.i
 - `/` - Post index page
 - `/{slug}` - Published post view
 - `/{slug}/editor` - Edit/create post (requires auth)
-- `/drafts` - Draft posts view
+- `/admin` - Admin dashboard with all posts and categories
 
 ### Key Features
 
