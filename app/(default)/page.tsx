@@ -9,6 +9,9 @@ import { RecentShows } from "./_components/shows";
 
 export const metadata = {
 	title: "Jökull Sólberg",
+	alternates: {
+		canonical: "/",
+	},
 };
 
 export default async function Page() {

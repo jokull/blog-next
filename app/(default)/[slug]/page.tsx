@@ -4,7 +4,6 @@ import { ClientErrorBoundary } from "@/components/error-boundary";
 import { db } from "@/drizzle.config";
 import { env } from "@/env";
 import { extractFirstParagraph } from "@/lib/mdx-content-utils";
-import { normalizeImageUrl } from "@/lib/mdx-image-extractor";
 import { components } from "@/mdx-components";
 import { Comment, Post } from "@/schema";
 import { compile, run } from "@mdx-js/mdx";
@@ -59,33 +58,27 @@ export async function generateMetadata({
 		title: post.title,
 		description: description.substring(0, 160),
 		alternates: {
+			canonical: `${baseUrl}/${post.slug}`,
 			types: {
 				"text/plain": `${baseUrl}/${post.slug}.md`,
 			},
 		},
-	};
-
-	if (post.heroImage) {
-		const imageUrl = normalizeImageUrl(post.heroImage, baseUrl);
-		metadata.openGraph = {
+		openGraph: {
 			title: post.title,
 			description: description.substring(0, 160),
-			images: [
-				{
-					url: imageUrl,
-					width: 1200,
-					height: 630,
-					alt: post.title,
-				},
-			],
-		};
-		metadata.twitter = {
+			type: "article",
+			url: `${baseUrl}/${post.slug}`,
+			locale: post.locale === "is" ? "is_IS" : "en_US",
+			publishedTime: post.publishedAt.toISOString(),
+			modifiedTime: (post.modifiedAt ?? post.publishedAt).toISOString(),
+			authors: ["Jökull Sólberg"],
+		},
+		twitter: {
 			card: "summary_large_image",
 			title: post.title,
 			description: description.substring(0, 160),
-			images: [imageUrl],
-		};
-	}
+		},
+	};
 
 	return metadata;
 }

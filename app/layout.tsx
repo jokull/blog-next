@@ -27,6 +27,12 @@ export const metadata: Metadata = {
 		template: "%s - Jökull Sólberg",
 		default: "Jökull Sólberg",
 	},
+	description: "Personal blog about web development, technology, and software engineering",
+	openGraph: {
+		type: "website",
+		locale: "en_US",
+		siteName: "Jökull Sólberg",
+	},
 	alternates: {
 		types: {
 			"application/rss+xml": [
