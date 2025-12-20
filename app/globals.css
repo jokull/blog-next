@@ -1,6 +1,7 @@
 @import "tailwindcss";
+@import "tw-animate-css";
 
-@custom-variant dark (&:is(.dark *));
+@variant dark (&:is(.dark *));
 @plugin "tailwindcss-react-aria-components";
 
 @layer utilities {
@@ -280,6 +281,7 @@
 		border-color: var(--border, currentColor);
 	}
 	* {
+		text-rendering: optimizeLegibility;
 		scrollbar-width: thin;
 		scrollbar-color: var(--border) transparent;
 	}
@@ -583,4 +585,9 @@ article {
 		min-width: 44px;
 		z-index: 9999;
 	}
+}
+
+.react-aria-DropIndicator[data-drop-target] {
+	outline: 1px solid var(--primary);
+	transform: translateZ(0);
 }
