@@ -162,6 +162,14 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
 		mdx = null;
 	}
 
+	// Format markdown document with title and date (same as .md version)
+	const formattedDate = post.publishedAt.toISOString().split("T")[0];
+	const markdownDocument = `# ${post.title}
+
+${formattedDate}
+
+${post.markdown}`;
+
 	return (
 		<div className="">
 			<div className="mb-7">
@@ -172,7 +180,7 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
 						dateStyle: "long",
 					})}
 				</p>
-				<ClipboardCopyButton text={post.markdown}>Copy as markdown</ClipboardCopyButton>
+				<ClipboardCopyButton text={markdownDocument}>Copy as markdown</ClipboardCopyButton>
 			</div>
 			<ClientErrorBoundary>{mdx}</ClientErrorBoundary>
 
