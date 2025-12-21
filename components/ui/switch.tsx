@@ -1,5 +1,7 @@
 "use client";
 
+// Documentation: https://intentui.com/docs/components/controls/switch.md
+
 import { Switch as SwitchPrimitive, type SwitchProps } from "react-aria-components";
 import { twJoin, twMerge } from "tailwind-merge";
 import { cx } from "@/lib/primitive";

@@ -1,5 +1,7 @@
 "use client";
 
+// Documentation: https://intentui.com/docs/components/forms/field.md
+
 import type { FieldErrorProps, LabelProps, TextProps } from "react-aria-components";
 import {
 	FieldError as FieldErrorPrimitive,

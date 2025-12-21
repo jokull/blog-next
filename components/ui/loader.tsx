@@ -1,5 +1,7 @@
 "use client";
 
+// Documentation: https://intentui.com/docs/components/statuses/loader.md
+
 import { ProgressBar } from "react-aria-components";
 import { twMerge } from "tailwind-merge";
 

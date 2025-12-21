@@ -1,5 +1,7 @@
 "use client";
 
+// Documentation: https://intentui.com/docs/components/collections/dropdown.md
+
 import { CheckIcon } from "@heroicons/react/16/solid";
 import type {
 	ListBoxItemProps,

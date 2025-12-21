@@ -1,5 +1,7 @@
 "use client";
 
+// Documentation: https://intentui.com/docs/components/forms/input.md
+
 import {
 	Group,
 	type GroupProps,

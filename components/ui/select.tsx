@@ -1,5 +1,7 @@
 "use client";
 
+// Documentation: https://intentui.com/docs/components/pickers/select.md
+
 import { ChevronUpDownIcon } from "@heroicons/react/20/solid";
 import type {
 	ListBoxProps,

@@ -7,7 +7,7 @@ import type { InferSelectModel } from "drizzle-orm";
 import { type ReactNode, useCallback, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Select, SelectItem } from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger } from "@/components/ui/select";
 import type { Post } from "@/schema";
 import { previewPost, togglePublishPost, updatePost } from "../server";
 import { DateInput } from "./date-input";
@@ -88,8 +88,11 @@ export function Editor({ mdx, ...props }: { post: InferSelectModel<typeof Post>;
 							}}
 							placeholder="Select language"
 						>
-							<SelectItem id="en">English</SelectItem>
-							<SelectItem id="is">Íslenska</SelectItem>
+							<SelectTrigger />
+							<SelectContent>
+								<SelectItem id="en">English</SelectItem>
+								<SelectItem id="is">Íslenska</SelectItem>
+							</SelectContent>
 						</Select>
 						<Preview post={post}>{mdx}</Preview>
 						<form

@@ -1,5 +1,7 @@
 "use client";
 
+// Documentation: https://intentui.com/docs/components/overlays/modal.md
+
 import type { DialogProps, DialogTriggerProps, ModalOverlayProps } from "react-aria-components";
 import {
 	DialogTrigger as DialogTriggerPrimitive,

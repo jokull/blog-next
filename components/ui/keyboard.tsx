@@ -1,3 +1,5 @@
+// Documentation: https://intentui.com/docs/components/controls/keyboard.md
+
 import { Keyboard as KeyboardPrimitive } from "react-aria-components";
 import { twMerge } from "tailwind-merge";
 

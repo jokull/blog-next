@@ -1,5 +1,7 @@
 "use client";
 
+// Documentation: https://intentui.com/docs/components/overlays/popover.md
+
 import type {
 	DialogTriggerProps,
 	PopoverProps as PopoverPrimitiveProps,

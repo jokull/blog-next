@@ -1,5 +1,7 @@
 "use client";
 
+// Documentation: https://intentui.com/docs/components/buttons/button.md
+
 import {
 	Button as ButtonPrimitive,
 	type ButtonProps as ButtonPrimitiveProps,

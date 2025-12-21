@@ -1,5 +1,7 @@
 "use client";
 
+// Documentation: https://intentui.com/docs/components/buttons/toggle-group.md
+
 import { createContext, use } from "react";
 import {
 	composeRenderProps,

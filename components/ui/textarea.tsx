@@ -1,5 +1,7 @@
 "use client";
 
+// Documentation: https://intentui.com/docs/components/forms/textarea.md
+
 import { TextArea, type TextAreaProps } from "react-aria-components";
 import { twJoin } from "tailwind-merge";
 import { cx } from "@/lib/primitive";

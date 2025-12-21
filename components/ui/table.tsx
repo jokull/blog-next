@@ -1,5 +1,7 @@
 "use client";
 
+// Documentation: https://intentui.com/docs/components/collections/table.md
+
 import { ChevronDownIcon, MinusIcon } from "@heroicons/react/20/solid";
 import { createContext, use } from "react";
 import type {
