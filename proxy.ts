@@ -36,7 +36,7 @@ export async function proxy(request: NextRequest) {
 
 			// In production, redirect to GitHub OAuth
 			const url = request.nextUrl.clone();
-			url.pathname = "/api/auth/login";
+			url.pathname = "/auth/login";
 			url.searchParams.set("next", currentUrl);
 			return NextResponse.redirect(url);
 		}
