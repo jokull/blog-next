@@ -38,18 +38,41 @@ app/kitty/
 │   ├── culori.d.ts              # Type definitions for culori/fn
 │   └── culori-main.d.ts         # Type definitions for culori
 └── _components/
-    ├── kitty-client.tsx         # Main client component with all state management
-    ├── theme-browser.tsx        # Left sidebar: search, filter, theme list
-    ├── theme-metadata.tsx       # Theme name, description, action buttons
+    ├── kitty-client.tsx         # Main client component with state + mode management
+    ├── theme-sidebar.tsx        # Left sidebar: tabs (Community/Published/My Themes)
+    ├── editor-toolbar.tsx       # Sticky toolbar with mode-specific action buttons
+    ├── theme-editor.tsx         # Main editor: metadata, colors, preview
     ├── color-selector.tsx       # 21 colors in 3 groups (0-7, 8-15, basic)
     ├── color-editor.tsx         # Edit selected color with OKLCH picker
     ├── theme-preview.tsx        # Live terminal preview
-    ├── import-dialog.tsx        # Modal to import from Kitty official repo
-    ├── export-button.tsx        # Generate and copy .conf file
     └── oklch/
         ├── oklch-picker.tsx     # Container for L/C/H sliders
         └── oklch-slider.tsx     # Canvas-rendered gradient slider (core component)
 ```
+
+## Editor Modes
+
+The editor uses explicit modes to control user interaction:
+
+### View Mode (default)
+
+- **Entry**: Selecting any theme from sidebar
+- **Controls**: All editing disabled (read-only)
+- **Actions**: Fork (non-owned) or Edit (owned), Export
+
+### Edit Mode (owned themes)
+
+- **Entry**: Click "Edit" button on owned theme
+- **Controls**: Full editing enabled
+- **Actions**: Save, Cancel, Publish/Unpublish, Delete, Export
+- **Exit**: Cancel returns to View Mode
+
+### Draft Mode (new or forked themes)
+
+- **Entry**: Click "Fork" or "Create New Theme"
+- **Controls**: Full editing enabled
+- **Actions**: Save, Discard, Export
+- **Exit**: Save creates theme, Discard returns to View Mode
 
 ## Database Schema
 
@@ -81,7 +104,45 @@ app/kitty/
 
 ## Key Components
 
-### 1. OklchSlider (`_components/oklch/oklch-slider.tsx`)
+### 1. KittyClient (`_components/kitty-client.tsx`)
+
+**Main orchestrator** - Manages all state, mode transitions, and coordinates between components.
+
+**State Management:**
+
+- `mode` - Current editor mode ("view" | "edit" | "draft")
+- `currentTheme` - Local state for editing
+- `savedTheme` - Last saved state from server
+- `selectedColor` - Which of 21 colors is being edited
+- `communityThemes` - Cached list from GitHub (lazy-loaded)
+- `activeTab` - Current sidebar tab ("community" | "published" | "my-themes")
+
+**Key Patterns:**
+
+- Uses `useTransition` for server action loading states
+- Explicit mode transitions (View → Edit → Draft)
+- Keyboard shortcut (Cmd+S) for save in edit/draft mode
+- Warns before leaving with unsaved changes via `beforeunload` event
+
+### 2. ThemeSidebar (`_components/theme-sidebar.tsx`)
+
+**Three-tab sidebar** - Unified browsing experience for all theme sources.
+
+**Tabs:**
+
+- **Community** - Themes from kovidgoyal/kitty-themes (lazy-loaded on first click)
+- **Published** - User-published themes on this platform
+- **My Themes** - Current user's themes (auth required)
+
+### 3. EditorToolbar (`_components/editor-toolbar.tsx`)
+
+**Mode-specific actions** - Shows different buttons based on current mode.
+
+**View Mode:** Fork (non-owned) or Edit (owned), Export
+**Edit Mode:** Save, Cancel, Publish/Unpublish, Delete, Export
+**Draft Mode:** Save, Discard, Export
+
+### 4. OklchSlider (`_components/oklch/oklch-slider.tsx`)
 
 **Critical Component** - Canvas-rendered gradient slider that visualizes OKLCH color variations.
 
@@ -94,25 +155,7 @@ app/kitty/
 
 **Important:** The `useMode` call at the top level is intentional and linted away with `// eslint-disable-next-line react-hooks/rules-of-hooks` because it's not actually a React hook despite the name.
 
-### 2. KittyClient (`_components/kitty-client.tsx`)
-
-**Main orchestrator** - Manages all state and coordinates between components.
-
-**State Management:**
-
-- `currentTheme` - Local state for editing
-- `savedTheme` - Last saved state from server
-- `selectedColor` - Which of 21 colors is being edited
-- `hasUnsavedChanges` - Derived from comparing current vs saved
-- `forkedFrom` - Attribution info if theme is a fork
-
-**Key Patterns:**
-
-- Uses `useTransition` for server action loading states
-- Warns before leaving with unsaved changes via `beforeunload` event
-- All mutations go through server actions with optimistic UI updates
-
-### 3. Server Actions (`actions.ts`)
+### 5. Server Actions (`actions.ts`)
 
 **Authentication Pattern:**
 

@@ -67,37 +67,38 @@ function ColorGroup({ colors, theme, selectedColor, onSelectColor }: ColorGroupP
 	);
 }
 
-export function ColorSelector({ theme, selectedColor, onSelectColor }: ColorSelectorProps) {
-	const normalColors: ColorKey[] = [
-		"color0",
-		"color1",
-		"color2",
-		"color3",
-		"color4",
-		"color5",
-		"color6",
-		"color7",
-	];
-	const brightColors: ColorKey[] = [
-		"color8",
-		"color9",
-		"color10",
-		"color11",
-		"color12",
-		"color13",
-		"color14",
-		"color15",
-	];
-	const basicColors: ColorKey[] = [
-		"foreground",
-		"background",
-		"cursor",
-		"selection_foreground",
-		"selection_background",
-	];
+const normalColors: ColorKey[] = [
+	"color0",
+	"color1",
+	"color2",
+	"color3",
+	"color4",
+	"color5",
+	"color6",
+	"color7",
+];
+const brightColors: ColorKey[] = [
+	"color8",
+	"color9",
+	"color10",
+	"color11",
+	"color12",
+	"color13",
+	"color14",
+	"color15",
+];
+const basicColors: ColorKey[] = [
+	"foreground",
+	"background",
+	"cursor",
+	"selection_foreground",
+	"selection_background",
+];
 
+// Returns three separate column elements for use in a parent grid
+export function ColorSelector({ theme, selectedColor, onSelectColor }: ColorSelectorProps) {
 	return (
-		<div className="grid grid-cols-3 gap-6">
+		<>
 			<ColorGroup
 				colors={normalColors}
 				theme={theme}
@@ -116,6 +117,6 @@ export function ColorSelector({ theme, selectedColor, onSelectColor }: ColorSele
 				selectedColor={selectedColor}
 				onSelectColor={onSelectColor}
 			/>
-		</div>
+		</>
 	);
 }
