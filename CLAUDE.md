@@ -125,7 +125,39 @@ Single `Post` table with fields: `slug` (PK), `title`, `markdown`, `previewMarkd
 
 ### Authentication
 
-GitHub OAuth-based authentication with hard-coded email check (`jokull@solberg.is`) in `auth.ts:25`. Uses iron-session for session management.
+**GitHub OAuth** with iron-session for encrypted cookie-based sessions. Admin access restricted to GitHub username `"jokull"` (`auth.ts:75`).
+
+#### Key Functions (auth.ts)
+
+- `requireAuth(currentUrl?)` - Redirects to GitHub OAuth if not authenticated, returns username if authenticated
+- `requireAdmin(currentUrl?)` - Like `requireAuth()` but throws error if username !== "jokull"
+- `isAdmin()` - Returns boolean, checks if current user is admin
+- `getSession()` - Returns iron-session with `githubUsername` field
+
+#### Protecting Routes
+
+```tsx
+// Server Component - redirect to login
+import { requireAdmin } from "@/auth";
+
+export default async function AdminPage() {
+	await requireAdmin(); // or requireAuth() for any authenticated user
+	// ... rest of component
+}
+```
+
+#### Development Shortcut
+
+**In development:** Visit any protected route and you'll auto-redirect to `/api/dev-auth`, which sets session to `"jokull"` without GitHub OAuth.
+
+#### OAuth Flow (Production)
+
+1. `requireAuth()` → redirects to GitHub OAuth
+2. GitHub → redirects to `/callback?code=...`
+3. Callback validates code, fetches GitHub user, stores `githubUsername` in session
+4. Redirects to original destination
+
+**Session details:** 1-year cookie, httpOnly, stores only `githubUsername`, encrypted with `GITHUB_CLIENT_SECRET`
 
 ### App Structure
 

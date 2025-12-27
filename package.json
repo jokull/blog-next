@@ -3,7 +3,8 @@
 	"version": "0.1.0",
 	"private": true,
 	"scripts": {
-		"dev": "concurrently \"bun run dev:next\" \"bun run dev:db\"",
+		"atlas": "./scripts/atlas-diff.sh",
+		"dev": "concurrently \"bun run dev:next\" \"bun run dev:db\" \"bun run studio\"",
 		"dev:next": "next dev --turbo",
 		"dev:db": "turso dev --db-file database.db --port 9797",
 		"build": "next build",
@@ -18,6 +19,7 @@
 		"knip:fix": "dotenvx run -- knip --fix",
 		"generate:migration": "drizzle-kit generate",
 		"run:migration": "drizzle-kit up",
+		"studio": "drizzle-kit studio",
 		"postinstall": "lefthook install"
 	},
 	"dependencies": {
@@ -31,6 +33,7 @@
 		"@tanstack/react-pacer": "^0.18.0",
 		"arctic": "^3.7.0",
 		"clsx": "^2.1.1",
+		"culori": "^4.0.2",
 		"drizzle-orm": "^0.45.1",
 		"iron-session": "^8.0.4",
 		"monaco-editor": "^0.55.1",

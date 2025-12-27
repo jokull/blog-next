@@ -40,3 +40,51 @@ export const Comment = sqliteTable("comment", {
 		.notNull()
 		.$default(() => new Date()),
 });
+
+interface OklchColor {
+	l: number; // Lightness (0-1)
+	c: number; // Chroma (0-0.37)
+	h: number; // Hue (0-360)
+}
+
+export const KittyTheme = sqliteTable("kitty_theme", {
+	id: integer("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
+	slug: text("slug").notNull().unique(),
+	name: text("name").notNull(),
+	authorGithubId: integer("author_github_id", { mode: "number" }).notNull(),
+	authorGithubUsername: text("author_github_username").notNull(),
+	authorAvatarUrl: text("author_avatar_url").notNull(),
+	isPublished: integer("is_published", { mode: "boolean" }).default(false).notNull(),
+	// Self-reference: `any` required to break circular type inference in Drizzle ORM
+	forkedFromId: integer("forked_from_id", { mode: "number" }).references(
+		(): any => KittyTheme.id,
+	),
+	blurb: text("blurb"),
+	colors: text("colors", { mode: "json" }).notNull().$type<{
+		color0: OklchColor;
+		color1: OklchColor;
+		color2: OklchColor;
+		color3: OklchColor;
+		color4: OklchColor;
+		color5: OklchColor;
+		color6: OklchColor;
+		color7: OklchColor;
+		color8: OklchColor;
+		color9: OklchColor;
+		color10: OklchColor;
+		color11: OklchColor;
+		color12: OklchColor;
+		color13: OklchColor;
+		color14: OklchColor;
+		color15: OklchColor;
+		foreground: OklchColor;
+		background: OklchColor;
+		cursor: OklchColor;
+		selection_foreground: OklchColor;
+		selection_background: OklchColor;
+	}>(),
+	createdAt: integer("created_at", { mode: "timestamp" })
+		.notNull()
+		.$default(() => new Date()),
+	modifiedAt: integer("modified_at", { mode: "timestamp" }),
+});
