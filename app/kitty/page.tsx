@@ -1,4 +1,5 @@
 import { getSession, isAdmin } from "@/auth";
+import type { Metadata } from "next";
 import { getPublishedThemes, getUserThemes } from "./actions";
 import { KittyClient } from "./_components/kitty-client";
 import { defaultTheme } from "./_lib/default-theme";
@@ -6,6 +7,86 @@ import { fetchThemeConfig, fetchThemesList, parseThemeConfig } from "./_lib/them
 import type { KittyTheme } from "./_lib/types";
 
 export const dynamic = "force-dynamic";
+
+type SearchParams = { theme?: string };
+
+export async function generateMetadata({
+	searchParams,
+}: {
+	searchParams: Promise<SearchParams>;
+}): Promise<Metadata> {
+	const { theme: themeParam } = await searchParams;
+
+	// Default metadata
+	const baseMetadata: Metadata = {
+		title: "Kitty Theme Builder",
+		description:
+			"Create and share beautiful color themes for the Kitty terminal emulator using an intuitive OKLCH color editor.",
+		openGraph: {
+			title: "Kitty Theme Builder",
+			description:
+				"Create and share beautiful color themes for the Kitty terminal emulator using an intuitive OKLCH color editor.",
+			type: "website",
+		},
+		twitter: {
+			card: "summary_large_image",
+			title: "Kitty Theme Builder",
+			description:
+				"Create and share beautiful color themes for the Kitty terminal emulator using an intuitive OKLCH color editor.",
+		},
+	};
+
+	// If no theme param, return base metadata
+	if (!themeParam) {
+		return baseMetadata;
+	}
+
+	// Try to get theme-specific metadata
+	let themeName = "Kitty Theme";
+	let themeAuthor = "";
+
+	if (themeParam.startsWith("community:")) {
+		const communityFile = themeParam.slice("community:".length);
+		try {
+			const themes = await fetchThemesList();
+			const meta = themes.find((t) => t.file === communityFile);
+			if (meta) {
+				themeName = meta.name;
+				themeAuthor = meta.author ?? "";
+			}
+		} catch {
+			// Ignore errors, use defaults
+		}
+	} else {
+		const themeId = parseInt(themeParam, 10);
+		if (!isNaN(themeId)) {
+			const publishedThemes = await getPublishedThemes();
+			const theme = publishedThemes.find((t) => t.id === themeId);
+			if (theme) {
+				themeName = theme.name;
+				themeAuthor = theme.authorGithubUsername;
+			}
+		}
+	}
+
+	const title = themeAuthor ? `${themeName} by ${themeAuthor}` : themeName;
+	const description = `${themeName} - A color theme for the Kitty terminal emulator. Create your own themes with the OKLCH color editor.`;
+
+	return {
+		title: `${title} | Kitty Theme Builder`,
+		description,
+		openGraph: {
+			title,
+			description,
+			type: "website",
+		},
+		twitter: {
+			card: "summary_large_image",
+			title,
+			description,
+		},
+	};
+}
 
 type InitialTab = "community" | "published" | "my-themes";
 

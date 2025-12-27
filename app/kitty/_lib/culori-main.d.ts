@@ -12,4 +12,5 @@ declare module "culori" {
 
 	export function oklch(color: any): Color | undefined;
 	export function formatCss(color: any): string;
+	export function formatHex(color: any): string | undefined;
 }
