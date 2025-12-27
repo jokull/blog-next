@@ -8,9 +8,9 @@ import { fetchThemeConfig, fetchThemesList, parseThemeConfig } from "./_lib/them
 import type { KittyTheme, OklchColor } from "./_lib/types";
 
 export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
-export const revalidate = 3600;
 
 const fontBoldData = readFileSync(join(process.cwd(), "app/_fonts/Inter-Bold.ttf"));
 const fontMediumData = readFileSync(join(process.cwd(), "app/_fonts/Inter-Medium.ttf"));
@@ -71,10 +71,10 @@ async function resolveTheme(themeParam: string | undefined): Promise<KittyTheme>
 export default async function Image({
 	searchParams,
 }: {
-	searchParams: Promise<{ theme?: string }>;
+	searchParams?: Promise<{ theme?: string }>;
 }) {
-	const { theme: themeParam } = await searchParams;
-	const theme = await resolveTheme(themeParam);
+	const params = searchParams ? await searchParams : {};
+	const theme = await resolveTheme(params.theme);
 
 	const bgColor = oklchToHex(theme.colors.background);
 	const fgColor = oklchToHex(theme.colors.foreground);
