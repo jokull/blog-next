@@ -1,171 +1,52 @@
-import { getSession, isAdmin } from "@/auth";
+import { redirect } from "next/navigation";
 import type { Metadata } from "next";
-import { getPublishedThemes, getUserThemes } from "./actions";
-import { KittyClient } from "./_components/kitty-client";
 import { defaultTheme } from "./_lib/default-theme";
-import { fetchThemeConfig, fetchThemesList, parseThemeConfig } from "./_lib/theme-parser";
-import type { KittyTheme } from "./_lib/types";
+import { communityFileToSlug } from "./_lib/slug-utils";
+import { KittyEditor } from "./_components/kitty-editor";
 
 export const dynamic = "force-dynamic";
 
-type SearchParams = { theme?: string };
-
-export async function generateMetadata({
-	searchParams,
-}: {
-	searchParams: Promise<SearchParams>;
-}): Promise<Metadata> {
-	const { theme: themeParam } = await searchParams;
-
-	// Default metadata
-	const baseMetadata: Metadata = {
+export const metadata: Metadata = {
+	title: "Kitty Theme Builder",
+	description:
+		"Create and share beautiful color themes for the Kitty terminal emulator using an intuitive OKLCH color editor.",
+	openGraph: {
 		title: "Kitty Theme Builder",
 		description:
 			"Create and share beautiful color themes for the Kitty terminal emulator using an intuitive OKLCH color editor.",
-		openGraph: {
-			title: "Kitty Theme Builder",
-			description:
-				"Create and share beautiful color themes for the Kitty terminal emulator using an intuitive OKLCH color editor.",
-			type: "website",
-		},
-		twitter: {
-			card: "summary_large_image",
-			title: "Kitty Theme Builder",
-			description:
-				"Create and share beautiful color themes for the Kitty terminal emulator using an intuitive OKLCH color editor.",
-		},
-	};
+		type: "website",
+	},
+	twitter: {
+		card: "summary_large_image",
+		title: "Kitty Theme Builder",
+		description:
+			"Create and share beautiful color themes for the Kitty terminal emulator using an intuitive OKLCH color editor.",
+	},
+};
 
-	// If no theme param, return base metadata
-	if (!themeParam) {
-		return baseMetadata;
-	}
-
-	// Try to get theme-specific metadata
-	let themeName = "Kitty Theme";
-	let themeAuthor = "";
-
-	if (themeParam.startsWith("community:")) {
-		const communityFile = themeParam.slice("community:".length);
-		try {
-			const themes = await fetchThemesList();
-			const meta = themes.find((t) => t.file === communityFile);
-			if (meta) {
-				themeName = meta.name;
-				themeAuthor = meta.author ?? "";
-			}
-		} catch {
-			// Ignore errors, use defaults
-		}
-	} else {
-		const themeId = parseInt(themeParam, 10);
-		if (!isNaN(themeId)) {
-			const publishedThemes = await getPublishedThemes();
-			const theme = publishedThemes.find((t) => t.id === themeId);
-			if (theme) {
-				themeName = theme.name;
-				themeAuthor = theme.authorGithubUsername;
-			}
-		}
-	}
-
-	const title = themeAuthor ? `${themeName} by ${themeAuthor}` : themeName;
-	const description = `${themeName} - A color theme for the Kitty terminal emulator. Create your own themes with the OKLCH color editor.`;
-
-	return {
-		title: `${title} | Kitty Theme Builder`,
-		description,
-		openGraph: {
-			title,
-			description,
-			type: "website",
-		},
-		twitter: {
-			card: "summary_large_image",
-			title,
-			description,
-		},
-	};
+interface PageProps {
+	searchParams: Promise<{ theme?: string }>;
 }
 
-type InitialTab = "community" | "published" | "my-themes";
-
-export default async function KittyPage({
-	searchParams,
-}: {
-	searchParams: Promise<{ theme?: string }>;
-}) {
+export default async function KittyPage({ searchParams }: PageProps) {
 	const { theme: themeParam } = await searchParams;
-	const session = await getSession();
-	const isAdminUser = await isAdmin();
 
-	const publishedThemes = await getPublishedThemes();
-	const userThemes = session.githubUsername ? await getUserThemes() : [];
-
-	// Resolve initial theme from URL - server handles all async work
-	let initialTheme: KittyTheme = defaultTheme;
-	let initialTab: InitialTab = session.githubUsername ? "my-themes" : "published";
-
+	// Backward compatibility: redirect old URLs to new routes
 	if (themeParam) {
 		if (themeParam.startsWith("community:")) {
-			// Community theme - fetch from GitHub
+			// "community:themes/NightOwl.conf" -> "/kitty/community/nightowl"
 			const communityFile = themeParam.slice("community:".length);
-			try {
-				const themes = await fetchThemesList();
-				const meta = themes.find((t) => t.file === communityFile);
-				if (meta) {
-					const configText = await fetchThemeConfig(meta.file);
-					const parsed = parseThemeConfig(configText);
-					initialTheme = {
-						id: null,
-						slug: "",
-						name: parsed.name ?? meta.name,
-						blurb: parsed.blurb ?? meta.blurb ?? null,
-						authorGithubId: 0,
-						authorGithubUsername: meta.author ?? "",
-						authorAvatarUrl: "",
-						isPublished: false,
-						forkedFromId: null,
-						createdAt: new Date(),
-						modifiedAt: null,
-						colors: {
-							...defaultTheme.colors,
-							...parsed.colors,
-						},
-					};
-					initialTab = "community";
-				}
-			} catch (error) {
-				// eslint-disable-next-line no-console
-				console.error("Failed to load community theme:", error);
-			}
+			const slug = communityFileToSlug(communityFile);
+			redirect(`/kitty/community/${slug}`);
 		} else {
-			// DB theme - look up by ID
+			// "123" -> "/kitty/123"
 			const themeId = parseInt(themeParam, 10);
 			if (!isNaN(themeId)) {
-				const published = publishedThemes.find((t) => t.id === themeId);
-				if (published) {
-					initialTheme = published;
-					initialTab = "published";
-				} else {
-					const userTheme = userThemes.find((t) => t.id === themeId);
-					if (userTheme) {
-						initialTheme = userTheme;
-						initialTab = "my-themes";
-					}
-				}
+				redirect(`/kitty/${themeId}`);
 			}
 		}
 	}
 
-	return (
-		<KittyClient
-			publishedThemes={publishedThemes}
-			userThemes={userThemes}
-			username={session.githubUsername}
-			isAdmin={isAdminUser}
-			initialTheme={initialTheme}
-			initialTab={initialTab}
-		/>
-	);
+	// Empty state with NightOwl Chroma preview
+	return <KittyEditor initialTheme={defaultTheme} initialMode="view" showEmptyState />;
 }

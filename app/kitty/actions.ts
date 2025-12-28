@@ -242,3 +242,37 @@ export async function getForkedFromTheme(forkedFromId: number): Promise<KittyThe
 		colors: theme.colors as KittyThemeType["colors"],
 	} as KittyThemeType;
 }
+
+// Get single theme by ID (with permission check)
+// Returns theme if: published OR owned by current user OR user is admin
+export async function getThemeById(id: number): Promise<KittyThemeType | null> {
+	const theme = await db.query.KittyTheme.findFirst({
+		where: eq(KittyTheme.id, id),
+	});
+
+	if (!theme) return null;
+
+	// Published themes are always visible
+	if (theme.isPublished) {
+		return {
+			...theme,
+			blurb: theme.blurb ?? null,
+			colors: theme.colors as KittyThemeType["colors"],
+		} as KittyThemeType;
+	}
+
+	// For unpublished themes, check ownership/admin status
+	const session = await getSession();
+	const isOwner = theme.authorGithubUsername === session.githubUsername;
+	const isAdminUser = await isAdmin();
+
+	if (!isOwner && !isAdminUser) {
+		return null; // Treat as not found for unauthorized users
+	}
+
+	return {
+		...theme,
+		blurb: theme.blurb ?? null,
+		colors: theme.colors as KittyThemeType["colors"],
+	} as KittyThemeType;
+}

@@ -4,45 +4,49 @@ import { OctocatIcon } from "@/components/octocat-icon";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { TextField } from "@/components/ui/text-field";
 import { Tab, TabList, TabPanel, Tabs } from "@/components/ui/tabs";
+import { TextField } from "@/components/ui/text-field";
+import { useRouter, usePathname } from "next/navigation";
 import type { ChangeEvent } from "react";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useTransition } from "react";
+import { useKittyContext, type SidebarTab } from "../_context/kitty-context";
+import { defaultTheme } from "../_lib/default-theme";
+import { communityFileToSlug } from "../_lib/slug-utils";
 import type { KittyTheme } from "../_lib/types";
 import type { ThemeMetadata } from "../_lib/theme-parser";
+import { createTheme } from "../actions";
+import { ThemeLink } from "./theme-link";
 
-export type SidebarTab = "community" | "published" | "my-themes";
+export function ThemeSidebar() {
+	const router = useRouter();
+	const pathname = usePathname();
+	const [isPending, startTransition] = useTransition();
 
-interface ThemeSidebarProps {
-	publishedThemes: KittyTheme[];
-	userThemes: KittyTheme[];
-	communityThemes: ThemeMetadata[] | null;
-	communityLoading: boolean;
-	currentThemeId: number | null;
-	activeTab: SidebarTab;
-	onTabChange: (tab: SidebarTab) => void;
-	onSelectTheme: (theme: KittyTheme) => void;
-	onSelectCommunityTheme: (theme: ThemeMetadata) => void;
-	onCreateNew: () => void;
-	onLoadCommunity: () => void;
-	username?: string;
-}
+	const {
+		publishedThemes,
+		userThemes,
+		communityThemes,
+		communityLoading,
+		activeTab,
+		setActiveTab,
+		loadCommunityThemes,
+		username,
+		refreshThemes,
+		setHasUnsavedChanges,
+	} = useKittyContext();
 
-export function ThemeSidebar({
-	publishedThemes,
-	userThemes,
-	communityThemes,
-	communityLoading,
-	currentThemeId,
-	activeTab,
-	onTabChange,
-	onSelectTheme,
-	onSelectCommunityTheme,
-	onCreateNew,
-	onLoadCommunity,
-	username,
-}: ThemeSidebarProps) {
 	const [search, setSearch] = useState("");
+
+	// Determine current theme ID from pathname
+	const currentThemeId = useMemo(() => {
+		const match = pathname.match(/^\/kitty\/(\d+)$/);
+		return match ? parseInt(match[1], 10) : null;
+	}, [pathname]);
+
+	const currentCommunitySlug = useMemo(() => {
+		const match = pathname.match(/^\/kitty\/community\/([^/]+)$/);
+		return match ? match[1] : null;
+	}, [pathname]);
 
 	// Filter themes based on search
 	const filteredPublished = useMemo(() => {
@@ -77,16 +81,39 @@ export function ThemeSidebar({
 	// Handle tab change - trigger lazy load for community
 	const handleTabChange = (key: React.Key) => {
 		const tab = key as SidebarTab;
-		onTabChange(tab);
+		setActiveTab(tab);
 		if (tab === "community" && communityThemes === null && !communityLoading) {
-			onLoadCommunity();
+			void loadCommunityThemes();
 		}
+	};
+
+	// Create new theme handler
+	const handleCreateNew = () => {
+		if (!username) {
+			window.location.href = `/auth/login?next=/kitty`;
+			return;
+		}
+
+		startTransition(async () => {
+			const newTheme = await createTheme({
+				name: "Untitled Theme",
+				colors: defaultTheme.colors,
+				blurb: "",
+			});
+			setHasUnsavedChanges(false);
+			refreshThemes();
+			router.push(`/kitty/${newTheme.id}`);
+		});
 	};
 
 	return (
 		<div className="flex flex-col h-full">
 			<div className="p-4 border-b border-border">
-				<h1 className="text-lg font-bold mb-4">Kitty Theme Builder</h1>
+				<ThemeLink href="/kitty" className="block">
+					<h1 className="text-lg font-bold mb-4 hover:text-primary transition-colors">
+						Kitty Theme Builder
+					</h1>
+				</ThemeLink>
 
 				<TextField className="mb-3">
 					<Label className="sr-only">Search</Label>
@@ -130,33 +157,13 @@ export function ThemeSidebar({
 							</div>
 							<div className="space-y-2">
 								{filteredCommunity.map((theme) => (
-									<button
+									<CommunityThemeCard
 										key={theme.file}
-										type="button"
-										onClick={() => {
-											onSelectCommunityTheme(theme);
-										}}
-										className="w-full text-left p-3 rounded-lg border border-border hover:bg-muted/10 hover:border-muted-fg/20 transition-all"
-									>
-										<div className="font-semibold text-sm mb-1">
-											{theme.name}
-										</div>
-										{theme.author && (
-											<div className="text-xs text-muted-fg">
-												by {theme.author}
-											</div>
-										)}
-										{theme.blurb && (
-											<div className="text-xs text-muted-fg mt-1 line-clamp-2">
-												{theme.blurb}
-											</div>
-										)}
-										{theme.is_dark !== undefined && (
-											<div className="text-xs text-muted-fg mt-1">
-												{theme.is_dark ? "Dark" : "Light"}
-											</div>
-										)}
-									</button>
+										theme={theme}
+										isSelected={
+											currentCommunitySlug === communityFileToSlug(theme.file)
+										}
+									/>
 								))}
 								{filteredCommunity.length === 0 && (
 									<div className="text-center text-muted-fg py-8 text-sm">
@@ -179,9 +186,6 @@ export function ThemeSidebar({
 								key={theme.id}
 								theme={theme}
 								isSelected={currentThemeId === theme.id}
-								onClick={() => {
-									onSelectTheme(theme);
-								}}
 							/>
 						))}
 						{filteredPublished.length === 0 && (
@@ -204,9 +208,6 @@ export function ThemeSidebar({
 									key={theme.id}
 									theme={theme}
 									isSelected={currentThemeId === theme.id}
-									onClick={() => {
-										onSelectTheme(theme);
-									}}
 								/>
 							))}
 							{filteredUserThemes.length === 0 && (
@@ -221,13 +222,20 @@ export function ThemeSidebar({
 
 			<div className="p-4 border-t border-border">
 				{username ? (
-					<Button intent="primary" onPress={onCreateNew} className="w-full">
-						Create New Theme
+					<Button
+						intent="primary"
+						onPress={handleCreateNew}
+						isDisabled={isPending}
+						className="w-full"
+					>
+						{isPending ? "Creating..." : "Create New Theme"}
 					</Button>
 				) : (
 					<Button
 						intent="secondary"
-						onPress={onCreateNew}
+						onPress={() => {
+							window.location.href = `/auth/login?next=/kitty`;
+						}}
 						className="w-full bg-neutral-800 text-neutral-100 hover:bg-neutral-950 hover:text-white"
 					>
 						<OctocatIcon className="size-5" />
@@ -242,15 +250,13 @@ export function ThemeSidebar({
 interface ThemeCardProps {
 	theme: KittyTheme;
 	isSelected: boolean;
-	onClick: () => void;
 }
 
-function ThemeCard({ theme, isSelected, onClick }: ThemeCardProps) {
+function ThemeCard({ theme, isSelected }: ThemeCardProps) {
 	return (
-		<button
-			type="button"
-			onClick={onClick}
-			className={`w-full text-left p-3 rounded-lg border transition-all ${
+		<ThemeLink
+			href={`/kitty/${theme.id}`}
+			className={`block w-full text-left p-3 rounded-lg border transition-all ${
 				isSelected
 					? "bg-primary/10 border-primary"
 					: "border-border hover:bg-muted/10 hover:border-muted-fg/20"
@@ -266,6 +272,35 @@ function ThemeCard({ theme, isSelected, onClick }: ThemeCardProps) {
 			{!theme.isPublished && (
 				<div className="text-xs text-warning mt-1 font-semibold">Draft</div>
 			)}
-		</button>
+		</ThemeLink>
+	);
+}
+
+interface CommunityThemeCardProps {
+	theme: ThemeMetadata;
+	isSelected: boolean;
+}
+
+function CommunityThemeCard({ theme, isSelected }: CommunityThemeCardProps) {
+	const slug = communityFileToSlug(theme.file);
+
+	return (
+		<ThemeLink
+			href={`/kitty/community/${slug}`}
+			className={`block w-full text-left p-3 rounded-lg border transition-all ${
+				isSelected
+					? "bg-primary/10 border-primary"
+					: "border-border hover:bg-muted/10 hover:border-muted-fg/20"
+			}`}
+		>
+			<div className="font-semibold text-sm mb-1">{theme.name}</div>
+			{theme.author && <div className="text-xs text-muted-fg">by {theme.author}</div>}
+			{theme.blurb && (
+				<div className="text-xs text-muted-fg mt-1 line-clamp-2">{theme.blurb}</div>
+			)}
+			{theme.is_dark !== undefined && (
+				<div className="text-xs text-muted-fg mt-1">{theme.is_dark ? "Dark" : "Light"}</div>
+			)}
+		</ThemeLink>
 	);
 }
