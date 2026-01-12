@@ -39,6 +39,29 @@ bun dev
 turso dev --db-file database.db --port 9797
 ```
 
+## CLI Tool
+
+A command-line interface for managing posts without the web editor:
+
+```bash
+# Authenticate (opens browser for GitHub OAuth)
+bun run blog login
+
+# List all posts
+bun run blog list
+
+# Create a new post
+bun run blog create --slug my-post --title "My Post" --body-file ./post.md
+
+# Update and publish
+bun run blog update my-post --publish
+
+# Backup all posts to iCloud Documents
+bun run blog backup
+```
+
+Run `bun run blog --help` for all commands and options.
+
 ## Content Management
 
 The blog uses a clean URL structure for content management:

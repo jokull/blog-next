@@ -11,6 +11,41 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **Linting and formatting:** `bun run format-and-lint` (check only) or `bun run format-and-lint:fix` (fix issues)
 - **Database migrations:** `bun run generate:migration` (generate) and `bun run run:migration` (apply)
 
+### CLI Tool
+
+A command-line interface for managing blog posts is available at `cli/blog.ts`:
+
+```bash
+bun run blog <command> [options]
+```
+
+**Commands:**
+
+- `login` - Authenticate via browser (opens GitHub OAuth flow, stores token in `~/.blog-cli-session`)
+- `logout` - Clear stored authentication
+- `list` - List all posts with status, slug, title, and date
+- `get <slug>` - View full post details and content
+- `create` - Create a new post (requires `--slug` and `--title`)
+- `update <slug>` - Update an existing post
+- `delete <slug>` - Delete a post
+- `categories` - List available categories
+- `backup` - Backup all posts to iCloud Documents (`~/Library/Mobile Documents/.../blog-backup/`)
+
+**Common options:**
+
+- `-s, --slug` - Post slug
+- `-t, --title` - Post title
+- `-b, --body` - Post body (markdown)
+- `-f, --body-file` - Read body from file
+- `-c, --category` - Category slug
+- `-l, --locale` - Locale (`en` or `is`)
+- `--hero-image` - Hero image URL
+- `--publish` / `--unpublish` - Toggle publish state
+
+**Environment:**
+
+- `BLOG_API_URL` - API base URL (default: `http://localhost:3000`)
+
 ## Architecture Overview
 
 This is a Next.js 15 blog application with server-side rendering and a Monaco-based markdown editor. The architecture follows these patterns:
