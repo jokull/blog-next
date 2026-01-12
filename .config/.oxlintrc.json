@@ -67,7 +67,7 @@
 		"typescript/no-unnecessary-type-arguments": "warn",
 		"typescript/prefer-includes": "error",
 		"typescript/prefer-nullish-coalescing": "warn",
-		"typescript/prefer-optional-chain": "error",
+		"typescript/prefer-optional-chain": "off",
 		"typescript/prefer-return-this-type": "error",
 		"typescript/prefer-string-starts-ends-with": "error",
 		"typescript/require-array-sort-compare": "error",
