@@ -21,73 +21,129 @@ export function clearToken() {
 	}
 }
 
-function getRandomPort(): number {
-	return Math.floor(Math.random() * (65535 - 49152) + 49152);
+interface DeviceCodeResponse {
+	device_code: string;
+	user_code: string;
+	verification_uri: string;
+	expires_in: number;
+	interval: number;
+}
+
+interface TokenResponse {
+	access_token?: string;
+	token_type?: string;
+	scope?: string;
+	error?: string;
+	error_description?: string;
+	interval?: number;
+}
+
+async function fetchClientId(apiBase: string): Promise<string> {
+	const res = await fetch(`${apiBase}/api/oauth-config`);
+	if (!res.ok) {
+		throw new Error(`Failed to fetch OAuth config: ${res.status}`);
+	}
+	const data = (await res.json()) as { clientId: string };
+	return data.clientId;
+}
+
+async function requestDeviceCode(clientId: string): Promise<DeviceCodeResponse> {
+	const res = await fetch("https://github.com/login/device/code", {
+		method: "POST",
+		headers: {
+			Accept: "application/json",
+			"Content-Type": "application/x-www-form-urlencoded",
+		},
+		body: new URLSearchParams({
+			client_id: clientId,
+			scope: "user:email",
+		}),
+	});
+
+	if (!res.ok) {
+		throw new Error(`Failed to request device code: ${res.status}`);
+	}
+
+	return res.json() as Promise<DeviceCodeResponse>;
+}
+
+async function pollForToken(
+	clientId: string,
+	deviceCode: string,
+	interval: number,
+): Promise<string> {
+	const pollInterval = interval * 1000; // Convert to milliseconds
+
+	while (true) {
+		await new Promise((resolve) => setTimeout(resolve, pollInterval));
+
+		const res = await fetch("https://github.com/login/oauth/access_token", {
+			method: "POST",
+			headers: {
+				Accept: "application/json",
+				"Content-Type": "application/x-www-form-urlencoded",
+			},
+			body: new URLSearchParams({
+				client_id: clientId,
+				device_code: deviceCode,
+				grant_type: "urn:ietf:params:oauth:grant-type:device_code",
+			}),
+		});
+
+		const data = (await res.json()) as TokenResponse;
+
+		if (data.access_token) {
+			return data.access_token;
+		}
+
+		if (data.error === "authorization_pending") {
+			// User hasn't authorized yet, keep polling
+			continue;
+		}
+
+		if (data.error === "slow_down") {
+			// We're polling too fast, increase interval
+			await new Promise((resolve) => setTimeout(resolve, 5000));
+			continue;
+		}
+
+		if (data.error === "expired_token") {
+			throw new Error("Device code expired. Please try again.");
+		}
+
+		if (data.error === "access_denied") {
+			throw new Error("Authorization was denied by the user.");
+		}
+
+		if (data.error) {
+			throw new Error(`OAuth error: ${data.error} - ${data.error_description ?? ""}`);
+		}
+	}
 }
 
 export async function login(apiBase: string): Promise<string> {
-	const port = getRandomPort();
-	const callbackUrl = `http://localhost:${port}/callback`;
+	// Fetch client ID from the API
+	console.log("Fetching OAuth configuration...");
+	const clientId = await fetchClientId(apiBase);
 
-	return new Promise((resolve, reject) => {
-		let server: ReturnType<typeof Bun.serve> | null = null;
+	// Request device code from GitHub
+	console.log("Requesting device authorization...");
+	const deviceCode = await requestDeviceCode(clientId);
 
-		const timeout = setTimeout(
-			() => {
-				void server?.stop();
-				reject(new Error("Login timed out after 5 minutes"));
-			},
-			5 * 60 * 1000,
-		);
+	// Display instructions to user
+	console.log("\n" + "─".repeat(50));
+	console.log("To authenticate, visit:");
+	console.log(`  ${deviceCode.verification_uri}`);
+	console.log("\nAnd enter the code:");
+	console.log(`  ${deviceCode.user_code}`);
+	console.log("─".repeat(50) + "\n");
+	console.log("Waiting for authorization...");
 
-		server = Bun.serve({
-			port,
-			fetch(req) {
-				const url = new URL(req.url);
+	// Poll for token
+	const accessToken = await pollForToken(clientId, deviceCode.device_code, deviceCode.interval);
 
-				if (url.pathname === "/callback") {
-					// The API returns the token as "cookie" param (legacy naming)
-					const token = url.searchParams.get("cookie");
-					if (token) {
-						clearTimeout(timeout);
-						saveToken(token);
-						void server?.stop();
-						resolve(token);
+	// Save the token
+	saveToken(accessToken);
 
-						return new Response(
-							`<!DOCTYPE html>
-<html>
-<head><title>Login Successful</title></head>
-<body style="font-family: system-ui; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0;">
-	<div style="text-align: center;">
-		<h1>Login successful!</h1>
-		<p>You can close this window and return to the terminal.</p>
-	</div>
-</body>
-</html>`,
-							{ headers: { "Content-Type": "text/html" } },
-						);
-					}
-					return new Response("Missing token parameter", { status: 400 });
-				}
-
-				return new Response("Not found", { status: 404 });
-			},
-		});
-
-		const loginUrl = `${apiBase}/api/cli-auth?callback=${encodeURIComponent(callbackUrl)}`;
-
-		console.log(`Opening browser for authentication...`);
-		console.log(`If the browser doesn't open, visit: ${loginUrl}`);
-
-		// Open browser using platform-specific command
-		const openCommand =
-			process.platform === "darwin"
-				? "open"
-				: process.platform === "win32"
-					? "start"
-					: "xdg-open";
-
-		Bun.spawn([openCommand, loginUrl]);
-	});
+	return accessToken;
 }

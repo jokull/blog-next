@@ -2,37 +2,31 @@ import { zValidator } from "@hono/zod-validator";
 import { desc, eq } from "drizzle-orm";
 import type { Context, Next } from "hono";
 import { Hono } from "hono";
-import { unsealData } from "iron-session";
 import { z } from "zod/v4";
-import { getSession } from "@/auth";
+import { getSession, whoami } from "@/auth";
 import { db } from "@/drizzle.config";
 import { env } from "@/env";
 import { Post } from "@/schema";
 
 const app = new Hono().basePath("/api");
 
-// Verify CLI token from Authorization header
-async function verifyCliToken(token: string): Promise<string | null> {
+// Verify GitHub access token by calling GitHub API
+async function verifyGitHubToken(token: string): Promise<string | null> {
 	try {
-		const data = await unsealData<{ githubUsername: string; type: string }>(token, {
-			password: env.GITHUB_CLIENT_SECRET,
-		});
-		if (data.type === "cli" && data.githubUsername) {
-			return data.githubUsername;
-		}
-		return null;
+		const user = await whoami(token);
+		return user.login;
 	} catch {
 		return null;
 	}
 }
 
-// Auth middleware - checks for admin access via session or CLI token
+// Auth middleware - checks for admin access via session or GitHub token
 async function authMiddleware(c: Context, next: Next) {
-	// First, check for Authorization header (CLI token)
+	// First, check for Authorization header (GitHub access token)
 	const authHeader = c.req.header("Authorization");
 	if (authHeader?.startsWith("Bearer ")) {
 		const token = authHeader.slice(7);
-		const username = await verifyCliToken(token);
+		const username = await verifyGitHubToken(token);
 		if (username === "jokull") {
 			await next();
 			return;
@@ -69,6 +63,8 @@ const UpdatePostSchema = z.object({
 
 // Routes - must be chained for RPC type inference
 const route = app
+	// Public endpoint for CLI to get OAuth client ID
+	.get("/oauth-config", (c) => c.json({ clientId: env.GITHUB_CLIENT_ID }))
 	.get("/posts", authMiddleware, async (c) => {
 		const posts = await db.query.Post.findMany({
 			orderBy: [desc(Post.publishedAt)],
