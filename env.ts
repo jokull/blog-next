@@ -10,4 +10,22 @@ const envSchema = z.object({
 	ONEDOLLARSTATS_API_KEY: z.string().min(1),
 });
 
-export const env = envSchema.parse(process.env);
+type Env = z.infer<typeof envSchema>;
+
+let _env: Env | undefined;
+
+export const env = new Proxy({} as Env, {
+	get(_, prop: string) {
+		if (!_env) {
+			const result = envSchema.safeParse(process.env);
+			if (result.success) {
+				_env = result.data;
+			} else {
+				// During Workers startup, process.env isn't populated yet.
+				// Return the raw value if available, otherwise undefined.
+				return process.env[prop];
+			}
+		}
+		return _env[prop as keyof Env];
+	},
+});

@@ -1,24 +1,12 @@
 import { db } from "@/drizzle.config";
 import { Post } from "@/schema";
 import { eq, isNotNull } from "drizzle-orm";
-import { readFileSync } from "fs";
-import { ImageResponse } from "next/og";
 import { notFound } from "next/navigation";
-import { join } from "path";
 import { cache } from "react";
 
-// Runtime configuration for Node.js (required for fs operations)
-export const runtime = "nodejs";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 export const revalidate = 3600; // Cache for 1 hour
-
-// Load assets at module level for performance
-const profilePicData = readFileSync(join(process.cwd(), "public/baldur-square.jpg"));
-const profilePicBase64 = `data:image/jpeg;base64,${profilePicData.toString("base64")}`;
-
-const fontBoldData = readFileSync(join(process.cwd(), "app/_fonts/Inter-Bold.ttf"));
-const fontMediumData = readFileSync(join(process.cwd(), "app/_fonts/Inter-Medium.ttf"));
 
 // Cache database query for reuse
 const getPost = cache(async (slug: string) => {
@@ -41,6 +29,15 @@ export async function generateStaticParams() {
 export default async function Image({ params }: { params: Promise<{ slug: string }> }) {
 	const { slug } = await params;
 	const post = await getPost(slug);
+
+	const { ImageResponse } = await import("next/og");
+	const { readFileSync } = await import("fs");
+	const { join } = await import("path");
+
+	const profilePicData = readFileSync(join(process.cwd(), "public/baldur-square.jpg"));
+	const profilePicBase64 = `data:image/jpeg;base64,${profilePicData.toString("base64")}`;
+	const fontBoldData = readFileSync(join(process.cwd(), "app/_fonts/Inter-Bold.ttf"));
+	const fontMediumData = readFileSync(join(process.cwd(), "app/_fonts/Inter-Medium.ttf"));
 
 	// Format date based on locale
 	const formattedDate = post.publishedAt.toLocaleDateString(post.locale, {

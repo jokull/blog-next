@@ -1,19 +1,12 @@
 import { formatHex, oklch } from "culori";
-import { readFileSync } from "fs";
-import { ImageResponse } from "next/og";
-import { join } from "path";
 import { getPublishedThemes } from "./actions";
 import { defaultTheme } from "./_lib/default-theme";
 import { fetchThemeConfig, fetchThemesList, parseThemeConfig } from "./_lib/theme-parser";
 import type { KittyTheme, OklchColor } from "./_lib/types";
 
-export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
-
-const fontBoldData = readFileSync(join(process.cwd(), "app/_fonts/Inter-Bold.ttf"));
-const fontMediumData = readFileSync(join(process.cwd(), "app/_fonts/Inter-Medium.ttf"));
 
 function oklchToHex(color: OklchColor): string {
 	const result = formatHex(oklch({ l: color.l, c: color.c, h: color.h }));
@@ -94,6 +87,12 @@ export default async function Image({
 		{ key: "brightMagenta", color: theme.colors.color13 },
 		{ key: "brightCyan", color: theme.colors.color14 },
 	];
+
+	const { ImageResponse } = await import("next/og");
+	const { readFileSync } = await import("fs");
+	const { join } = await import("path");
+	const fontBoldData = readFileSync(join(process.cwd(), "app/_fonts/Inter-Bold.ttf"));
+	const fontMediumData = readFileSync(join(process.cwd(), "app/_fonts/Inter-Medium.ttf"));
 
 	const title = theme.name || "Kitty Theme Builder";
 	const author = theme.authorGithubUsername;
