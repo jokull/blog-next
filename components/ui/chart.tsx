@@ -109,9 +109,7 @@ const constructCategoryColors = (
 
 	categories.forEach((category, index) => {
 		const color = colors[index % colors.length];
-		if (color !== undefined) {
-			categoryColors.set(category, color);
-		}
+		categoryColors.set(category, color);
 	});
 
 	return categoryColors;
@@ -436,10 +434,6 @@ const ChartTooltipContent = <TValue extends ValueType, TName extends NameType>({
 
 		const [item] = payload;
 
-		if (!item) {
-			return null;
-		}
-
 		const key = String(labelKey ?? item.dataKey ?? item.name ?? "value");
 		const itemConfig = getPayloadConfigFromPayload(config, item, key);
 		const value =
@@ -507,7 +501,7 @@ const ChartTooltipContent = <TValue extends ValueType, TName extends NameType>({
 									"*:data-[slot=icon]:h-full *:data-[slot=icon]:w-2.5",
 							)}
 						>
-							{formatter && item?.value !== undefined && item.name ? (
+							{formatter && item.value !== undefined && item.name ? (
 								formatter(item.value, item.name, item, index, payload)
 							) : (
 								<>

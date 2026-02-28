@@ -5,9 +5,7 @@ import { isNotNull } from "drizzle-orm";
 import type { MetadataRoute } from "next";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-	const baseUrl = env.VERCEL_PROJECT_PRODUCTION_URL
-		? `https://${env.VERCEL_PROJECT_PRODUCTION_URL}`
-		: "https://blog-shud.vercel.app";
+	const baseUrl = env.SITE_URL;
 
 	const posts = await db.query.Post.findMany({
 		where: isNotNull(Post.publicAt),

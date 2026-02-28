@@ -55,7 +55,7 @@ export function ThemeSidebar() {
 		return publishedThemes.filter(
 			(t) =>
 				t.name.toLowerCase().includes(lower) ||
-				t.authorGithubUsername?.toLowerCase().includes(lower),
+				t.authorGithubUsername.toLowerCase().includes(lower),
 		);
 	}, [publishedThemes, search]);
 
@@ -65,7 +65,7 @@ export function ThemeSidebar() {
 		return userThemes.filter(
 			(t) =>
 				t.name.toLowerCase().includes(lower) ||
-				t.authorGithubUsername?.toLowerCase().includes(lower),
+				t.authorGithubUsername.toLowerCase().includes(lower),
 		);
 	}, [userThemes, search]);
 

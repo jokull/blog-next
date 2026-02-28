@@ -40,7 +40,7 @@ export async function extractFirstImage(markdown: string): Promise<string | null
 
 			if (node.type === "mdxJsxFlowElement" && node.name === "Image") {
 				const jsxNode = node as JSXImageNode;
-				const srcAttr = jsxNode.attributes?.find(
+				const srcAttr = jsxNode.attributes.find(
 					(attr) => attr.type === "mdxJsxAttribute" && attr.name === "src",
 				);
 
@@ -53,9 +53,7 @@ export async function extractFirstImage(markdown: string): Promise<string | null
 					const srcValue =
 						typeof srcAttr.value === "string"
 							? srcAttr.value
-							: srcAttr.value.type === "mdxJsxAttributeValueExpression"
-								? extractStringFromExpression(srcAttr.value.value)
-								: null;
+							: extractStringFromExpression(srcAttr.value.value);
 
 					if (srcValue) {
 						firstImageSrc = srcValue;

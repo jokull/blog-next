@@ -18,7 +18,7 @@ export default function RootLayout({
 					</article>
 				</main>
 			</div>
-			{env.VERCEL_ENV === "production" ? (
+			{env.NODE_ENV === "production" ? (
 				<script defer src="https://assets.onedollarstats.com/stonks.js" />
 			) : null}
 		</div>

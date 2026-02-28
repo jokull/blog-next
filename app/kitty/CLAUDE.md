@@ -189,8 +189,8 @@ If you need to add a 22nd color (e.g., `url_color`):
 
     ```typescript
     colors: {
-      // ... existing colors
-      url_color: OklchColor;
+    	// ... existing colors
+    	url_color: OklchColor;
     }
     ```
 

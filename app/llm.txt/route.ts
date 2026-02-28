@@ -11,9 +11,7 @@ export async function GET(_request: NextRequest) {
 		orderBy: [desc(Post.publishedAt)],
 	});
 
-	const baseUrl = env.VERCEL_PROJECT_PRODUCTION_URL
-		? `https://${env.VERCEL_PROJECT_PRODUCTION_URL}`
-		: "https://blog-shud.vercel.app";
+	const baseUrl = env.SITE_URL;
 
 	// Group posts by year
 	const postsByYear = pipe(
@@ -28,7 +26,7 @@ export async function GET(_request: NextRequest) {
 
 	for (const year of sortedYears) {
 		lines.push(`## ${year}`, "");
-		for (const post of postsByYear[year] || []) {
+		for (const post of postsByYear[year]) {
 			const date = post.publishedAt.toLocaleDateString(post.locale, {
 				year: "numeric",
 				month: "short",

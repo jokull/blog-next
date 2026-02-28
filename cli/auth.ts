@@ -74,7 +74,7 @@ async function pollForToken(
 ): Promise<string> {
 	const pollInterval = interval * 1000; // Convert to milliseconds
 
-	while (true) {
+	for (;;) {
 		await new Promise((resolve) => setTimeout(resolve, pollInterval));
 
 		const res = await fetch("https://github.com/login/oauth/access_token", {

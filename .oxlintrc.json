@@ -1,5 +1,5 @@
 {
-	"$schema": "../node_modules/oxlint/configuration_schema.json",
+	"$schema": "node_modules/oxlint/configuration_schema.json",
 	"plugins": ["react", "jsx-a11y", "import", "typescript"],
 	"env": {
 		"browser": true,
@@ -80,5 +80,5 @@
 	"categories": {
 		"correctness": "warn"
 	},
-	"ignorePatterns": ["node_modules", ".next", "out", "dist", "build", ".turbo"]
+	"ignorePatterns": ["node_modules", ".next", ".wrangler", "out", "dist", "build", ".turbo"]
 }

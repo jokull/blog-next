@@ -7,9 +7,7 @@ import { extractFirstImage, normalizeImageUrl } from "@/lib/mdx-image-extractor"
 import { Post } from "@/schema";
 
 export async function GET() {
-	const baseUrl = env.VERCEL_PROJECT_PRODUCTION_URL
-		? `https://${env.VERCEL_PROJECT_PRODUCTION_URL}`
-		: `http://localhost:${process.env.PORT ?? 3000}`;
+	const baseUrl = env.SITE_URL;
 
 	const feed = new RSS({
 		title: "Jökull Sólberg",

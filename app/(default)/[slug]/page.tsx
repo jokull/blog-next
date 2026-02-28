@@ -50,9 +50,7 @@ export async function generateMetadata({
 	const post = await getPost(slug);
 
 	const description = await extractFirstParagraph(post.markdown);
-	const baseUrl = env.VERCEL_PROJECT_PRODUCTION_URL
-		? `https://${env.VERCEL_PROJECT_PRODUCTION_URL}`
-		: "https://blog-shud.vercel.app";
+	const baseUrl = env.SITE_URL;
 
 	const metadata: Metadata = {
 		title: post.title,
