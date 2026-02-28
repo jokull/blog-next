@@ -1,8 +1,19 @@
+import langBash from "@shikijs/langs/bash";
+import langCss from "@shikijs/langs/css";
+import langHtml from "@shikijs/langs/html";
+import langJson from "@shikijs/langs/json";
+import langJsx from "@shikijs/langs/jsx";
+import langMarkdown from "@shikijs/langs/markdown";
+import langPython from "@shikijs/langs/python";
+import langSql from "@shikijs/langs/sql";
+import langTsx from "@shikijs/langs/tsx";
+import langTypescript from "@shikijs/langs/typescript";
 import type { MDXComponents } from "mdx/types";
 import Image from "next/image";
 import Link from "next/link";
 import type { ComponentProps, ReactNode } from "react";
-import { codeToHtml, createCssVariablesTheme } from "shiki";
+import { createCssVariablesTheme, createHighlighterCore } from "shiki/core";
+import { createJavaScriptRegexEngine } from "shiki/engine/javascript";
 
 import { ClipboardCopyButton } from "./app/(default)/[slug]/_components/clipboard-copy-button";
 import { BlockSideTitle } from "./components/block-sidetitle";
@@ -11,6 +22,26 @@ import { Tool } from "./components/tool";
 import { Card } from "./components/tweet-card";
 
 const cssVariablesTheme = createCssVariablesTheme({});
+
+// JS RegExp engine instead of default Oniguruma WASM — required for Cloudflare Workers
+// where dynamic WASM instantiation fails. Regression: some edge-case grammars may
+// highlight differently vs the Oniguruma engine. Languages must be pre-bundled here.
+const highlighter = createHighlighterCore({
+	themes: [cssVariablesTheme],
+	langs: [
+		langJsx,
+		langTsx,
+		langTypescript,
+		langBash,
+		langJson,
+		langHtml,
+		langCss,
+		langPython,
+		langSql,
+		langMarkdown,
+	],
+	engine: createJavaScriptRegexEngine(),
+});
 
 interface CodeProps {
 	children?: ReactNode;
@@ -84,30 +115,50 @@ export const components: MDXComponents = {
 			// Check if this is a code block (multi-line) or inline code (single line)
 			const isCodeBlock = props.children.includes("\n") || props.children.length > 50;
 
-			const code = await codeToHtml(props.children, {
-				lang: "jsx",
-				theme: cssVariablesTheme,
-				// theme: 'min-light',
-				// theme: 'snazzy-light',
-				transformers: [
-					{
-						// Since we're using dangerouslySetInnerHTML, the code and pre
-						// tags should be removed.
-						pre: (hast) => {
-							if (hast.children.length !== 1) {
-								throw new Error("<pre>: Expected a single <code> child");
-							}
-							if (hast.children[0].type !== "element") {
-								throw new Error("<pre>: Expected a <code> child");
-							}
-							return hast.children[0];
+			let code: string | null = null;
+			try {
+				const hl = await highlighter;
+				code = hl.codeToHtml(props.children, {
+					lang: "jsx",
+					theme: "css-variables",
+					transformers: [
+						{
+							// Since we're using dangerouslySetInnerHTML, the code and pre
+							// tags should be removed.
+							pre: (hast) => {
+								if (hast.children.length !== 1) {
+									throw new Error("<pre>: Expected a single <code> child");
+								}
+								if (hast.children[0].type !== "element") {
+									throw new Error("<pre>: Expected a <code> child");
+								}
+								return hast.children[0];
+							},
+							postprocess(html) {
+								return html.replace(/^<code>|<\/code>$/g, "");
+							},
 						},
-						postprocess(html) {
-							return html.replace(/^<code>|<\/code>$/g, "");
-						},
-					},
-				],
-			});
+					],
+				});
+			} catch (error) {
+				console.error("[shiki] codeToHtml failed, falling back to plain code:", error);
+			}
+
+			// Fallback: render unstyled code if shiki fails (e.g. WASM not available on Workers)
+			if (!code) {
+				return (
+					<>
+						{isCodeBlock && (
+							<span className="absolute right-2.5 bottom-2.5 rounded-xs border bg-white/5 px-2 py-px font-medium font-sans text-xs leading-0 backdrop-blur-md [&>button]:text-neutral-500 [&>button]:decoration-0">
+								<ClipboardCopyButton text={props.children}>
+									Copy
+								</ClipboardCopyButton>
+							</span>
+						)}
+						<code className="inline text-[0.805rem]">{props.children}</code>
+					</>
+				);
+			}
 
 			return (
 				<>

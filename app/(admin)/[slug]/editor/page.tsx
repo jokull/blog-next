@@ -1,7 +1,8 @@
-import { compile, run } from "@mdx-js/mdx";
 import { eq } from "drizzle-orm";
 import type { ReactElement, ReactNode } from "react";
-import * as runtime from "react/jsx-runtime";
+// safe-mdx: no eval/new Function — needed for Cloudflare Workers (see slug/page.tsx)
+import { SafeMdxRenderer } from "safe-mdx";
+import { mdxParse } from "safe-mdx/parse";
 import { requireAdmin } from "@/auth";
 import { ClientErrorBoundary } from "@/components/error-boundary";
 import { db } from "@/drizzle.config";
@@ -32,16 +33,9 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
 	let mdx: ReactElement | null = null;
 	let mdxError: ReactNode | null = null;
 	try {
-		const code = String(
-			await compile(post.previewMarkdown ?? post.markdown, {
-				outputFormat: "function-body",
-			}),
-		);
-		const module = (await run(code, {
-			...runtime,
-			baseUrl: import.meta.url,
-		})) as { default: (props: { components: typeof components }) => React.ReactElement };
-		mdx = module.default({ components });
+		const markdown = post.previewMarkdown ?? post.markdown;
+		const mdast = mdxParse(markdown);
+		mdx = <SafeMdxRenderer mdast={mdast} markdown={markdown} components={components} />;
 	} catch (error: unknown) {
 		mdxError = <div>{String(error)}</div>;
 	}

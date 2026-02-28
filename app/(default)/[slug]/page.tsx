@@ -6,13 +6,16 @@ import { env } from "@/env";
 import { extractFirstParagraph } from "@/lib/mdx-content-utils";
 import { components } from "@/mdx-components";
 import { Comment, Post } from "@/schema";
-import { compile, run } from "@mdx-js/mdx";
 import { eq, isNotNull } from "drizzle-orm";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { cache } from "react";
-import * as runtime from "react/jsx-runtime";
-import remarkGfm from "remark-gfm";
+// safe-mdx renders MDX without eval/new Function — required on Cloudflare Workers where
+// @mdx-js/mdx's run() is blocked (EvalError: Code generation from strings disallowed).
+// Regression: MDX expressions and inline JS in posts no longer evaluate. Custom JSX
+// components (Card, Tool, etc.) still work via the components map.
+import { SafeMdxRenderer } from "safe-mdx";
+import { mdxParse } from "safe-mdx/parse";
 import { ClipboardCopyButton } from "./_components/clipboard-copy-button";
 
 // This enables dynamic rendering for comments
@@ -108,34 +111,23 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
 	});
 
 	// Pre-render markdown content for each comment
-	const commentsWithRenderedContent = await Promise.all(
-		comments.map(async (comment) => {
-			let renderedContent: React.ReactElement | null = null;
+	const commentsWithRenderedContent = comments.map((comment) => {
+		let renderedContent: React.ReactElement | null = null;
 
-			try {
-				const code = String(
-					await compile(comment.content, {
-						outputFormat: "function-body",
-						remarkPlugins: [remarkGfm],
-					}),
-				);
-				const module = (await run(code, {
-					...runtime,
-					baseUrl: import.meta.url,
-				})) as {
-					default: (props: { components: typeof components }) => React.ReactElement;
-				};
-				renderedContent = module.default({ components });
-			} catch {
-				renderedContent = null;
-			}
+		try {
+			const mdast = mdxParse(comment.content);
+			renderedContent = (
+				<SafeMdxRenderer mdast={mdast} markdown={comment.content} components={components} />
+			);
+		} catch {
+			renderedContent = null;
+		}
 
-			return {
-				...comment,
-				renderedContent,
-			};
-		}),
-	);
+		return {
+			...comment,
+			renderedContent,
+		};
+	});
 
 	// Get visible comment count
 	const visibleComments = commentsWithRenderedContent.filter(
@@ -145,18 +137,10 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
 
 	let mdx: React.ReactElement | null = null;
 	try {
-		const code = String(
-			await compile(post.markdown, {
-				outputFormat: "function-body",
-				remarkPlugins: [remarkGfm],
-			}),
-		);
-		const module = (await run(code, {
-			...runtime,
-			baseUrl: import.meta.url,
-		})) as { default: (props: { components: typeof components }) => React.ReactElement };
-		mdx = module.default({ components });
-	} catch {
+		const mdast = mdxParse(post.markdown);
+		mdx = <SafeMdxRenderer mdast={mdast} markdown={post.markdown} components={components} />;
+	} catch (error) {
+		console.error("[mdx] Failed to parse post markdown:", error);
 		mdx = null;
 	}
 
