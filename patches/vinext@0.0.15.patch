@@ -1,0 +1,41 @@
+diff --git a/dist/config/config-matchers.js b/dist/config/config-matchers.js
+index d07ccf99f636be3e27237561fea4988423a957fc..24d143c50f475ee9ae80c787d427c2a82c73cd0a 100644
+--- a/dist/config/config-matchers.js
++++ b/dist/config/config-matchers.js
+@@ -360,7 +360,8 @@ export function matchConfigPattern(pathname, pattern) {
+     // the whole segment (":path*.md") as a named parameter and matches everything.
+     if (pattern.includes("(") ||
+         pattern.includes("\\") ||
+-        /:[\w-]+[*+][^/]/.test(pattern)) {
++        /:[\w-]+[*+][^/]/.test(pattern) ||
++        /:[\w-]+\./.test(pattern)) {
+         try {
+             // Param names may contain hyphens (e.g. :auth-method, :sign-in).
+             const paramNames = [];
+diff --git a/dist/index.js b/dist/index.js
+index fbe5ad85213a6cd5dd582cd440a7ed466b46e164..9b4524c72bda70d745ecbc3df3409001296d979d 100644
+--- a/dist/index.js
++++ b/dist/index.js
+@@ -3059,7 +3059,8 @@ export function matchConfigPattern(pathname, pattern) {
+     // the whole segment (":path*.md") as a named parameter and matches everything.
+     if (pattern.includes("(") ||
+         pattern.includes("\\") ||
+-        /:[\w-]+[*+][^/]/.test(pattern)) {
++        /:[\w-]+[*+][^/]/.test(pattern) ||
++        /:[\w-]+\./.test(pattern)) {
+         try {
+             // Extract named params and their constraints from the pattern.
+             // :param(constraint) -> use constraint as the regex group
+diff --git a/dist/server/app-dev-server.js b/dist/server/app-dev-server.js
+index 0e6ec2e78be54a91d79a71e2b06430838f0ae4a4..bdf49793cfb6b3d0cda07f6ee031536540c7126a 100644
+--- a/dist/server/app-dev-server.js
++++ b/dist/server/app-dev-server.js
+@@ -898,7 +898,7 @@ ${generateNormalizePathCode("modern")}
+ 
+ // ── Config pattern matching (redirects, rewrites, headers) ──────────────
+ function __matchConfigPattern(pathname, pattern) {
+-  if (pattern.includes("(") || pattern.includes("\\\\") || /:[\\w-]+[*+][^/]/.test(pattern)) {
++  if (pattern.includes("(") || pattern.includes("\\\\") || /:[\\w-]+[*+][^/]/.test(pattern) || /:[\\w-]+\\./.test(pattern)) {
+     try {
+       const paramNames = [];
+       const regexStr = pattern

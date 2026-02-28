@@ -90,5 +90,8 @@
 			"@tailwindcss/oxide",
 			"esbuild"
 		]
+	},
+	"patchedDependencies": {
+		"vinext@0.0.15": "patches/vinext@0.0.15.patch"
 	}
 }
