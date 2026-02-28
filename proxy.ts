@@ -4,7 +4,7 @@ import { getIronSession } from "iron-session";
 import { cookies } from "next/headers";
 import { env } from "@/env";
 
-export default async function proxy(request: NextRequest) {
+export async function proxy(request: NextRequest) {
 	const { pathname, searchParams } = request.nextUrl;
 
 	// Protect admin routes
