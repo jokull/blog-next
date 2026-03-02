@@ -1,7 +1,7 @@
 "use server";
 
 import { requireAuth } from "@/auth";
-import { db } from "@/drizzle.config";
+import { db } from "@/db";
 import { Category, Post } from "@/schema";
 import { eq, sql } from "drizzle-orm";
 import { revalidatePath } from "next/cache";

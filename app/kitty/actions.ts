@@ -1,7 +1,7 @@
 "use server";
 
 import { requireAuth, getSession, isAdmin, getGithubUser } from "@/auth";
-import { db } from "@/drizzle.config";
+import { db } from "@/db";
 import { KittyTheme } from "@/schema";
 import { eq, desc } from "drizzle-orm";
 import { revalidatePath } from "next/cache";

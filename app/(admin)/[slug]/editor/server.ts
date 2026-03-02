@@ -4,7 +4,7 @@ import { eq, type InferSelectModel } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { notFound } from "next/navigation";
 import { requireAuth } from "@/auth";
-import { db } from "@/drizzle.config";
+import { db } from "@/db";
 import { extractFirstImage } from "@/lib/mdx-image-extractor";
 import { Post } from "@/schema";
 

@@ -2,7 +2,7 @@ import { env } from "@/env";
 import { desc, isNotNull } from "drizzle-orm";
 import { type NextRequest, NextResponse } from "next/server";
 import { groupBy, pipe } from "remeda";
-import { db } from "../../drizzle.config";
+import { db } from "@/db";
 import { Post } from "../../schema";
 
 export async function GET(_request: NextRequest) {

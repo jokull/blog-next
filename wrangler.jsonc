@@ -6,9 +6,15 @@
 	"main": "./worker/index.ts",
 	"vars": {
 		"SITE_URL": "https://www.solberg.is",
-		"DATABASE_URL": "libsql://blog-jokull.aws-us-east-1.turso.io",
 		"GITHUB_CLIENT_ID": "Ov23licJONCc4hbUWRuK",
 	},
+	"d1_databases": [
+		{
+			"binding": "DB",
+			"database_name": "solberg-blog",
+			"database_id": "51a6e936-c76d-43d9-8633-b412ad365dba",
+		},
+	],
 	"assets": {
 		"not_found_handling": "none",
 		"directory": "dist/client",

@@ -1,6 +1,6 @@
 import { desc, isNotNull } from "drizzle-orm";
 import RSS, { type ItemOptions } from "rss";
-import { db } from "@/drizzle.config";
+import { db } from "@/db";
 import { env } from "@/env";
 import { extractFirstParagraph } from "@/lib/mdx-content-utils";
 import { extractFirstImage, normalizeImageUrl } from "@/lib/mdx-image-extractor";

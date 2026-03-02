@@ -1,4 +1,4 @@
-import { db } from "@/drizzle.config";
+import { db } from "@/db";
 import { env } from "@/env";
 import { Post } from "@/schema";
 import { isNotNull } from "drizzle-orm";

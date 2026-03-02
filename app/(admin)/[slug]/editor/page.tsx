@@ -5,7 +5,7 @@ import { SafeMdxRenderer } from "safe-mdx";
 import { mdxParse } from "safe-mdx/parse";
 import { requireAdmin } from "@/auth";
 import { ClientErrorBoundary } from "@/components/error-boundary";
-import { db } from "@/drizzle.config";
+import { db } from "@/db";
 import { components } from "@/mdx-components";
 import { Post } from "@/schema";
 import { Editor } from "./_components/editor";

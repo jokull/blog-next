@@ -1,7 +1,7 @@
 import { eq, isNotNull } from "drizzle-orm";
 import { type NextRequest, NextResponse } from "next/server";
 import { cache } from "react";
-import { db } from "../../../../drizzle.config";
+import { db } from "@/db";
 import { Post } from "../../../../schema";
 
 const getPost = cache(

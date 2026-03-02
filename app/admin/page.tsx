@@ -1,5 +1,5 @@
 import { requireAdmin } from "@/auth";
-import { db } from "@/drizzle.config";
+import { db } from "@/db";
 import { createStatsClient } from "@/lib/onedollarstats";
 import { Category, Post } from "@/schema";
 import { asc, desc, sql } from "drizzle-orm";

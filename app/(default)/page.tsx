@@ -1,5 +1,5 @@
 import { Theater } from "@/components/theater";
-import { db } from "@/drizzle.config";
+import { db } from "@/db";
 import { Comment, Post } from "@/schema";
 import { desc, eq, isNotNull, sql } from "drizzle-orm";
 import { Suspense } from "react";

@@ -3,7 +3,7 @@
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { getGithubUser, getSession, isAdmin } from "@/auth";
-import { db } from "@/drizzle.config";
+import { db } from "@/db";
 import { Comment } from "@/schema";
 
 export async function createComment(postSlug: string, content: string) {

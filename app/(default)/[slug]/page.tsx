@@ -1,7 +1,7 @@
 import { getGithubUser, getSession, isAdmin } from "@/auth";
 import { CommentsSection } from "@/components/comments-section";
 import { ClientErrorBoundary } from "@/components/error-boundary";
-import { db } from "@/drizzle.config";
+import { db } from "@/db";
 import { env } from "@/env";
 import { extractFirstParagraph } from "@/lib/mdx-content-utils";
 import { components } from "@/mdx-components";

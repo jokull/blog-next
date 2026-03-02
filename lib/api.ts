@@ -4,7 +4,7 @@ import type { Context, Next } from "hono";
 import { Hono } from "hono";
 import { z } from "zod/v4";
 import { getSession, whoami } from "@/auth";
-import { db } from "@/drizzle.config";
+import { db } from "@/db";
 import { env } from "@/env";
 import { Post } from "@/schema";
 
