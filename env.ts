@@ -3,7 +3,7 @@ import { z } from "zod";
 const envSchema = z.object({
 	GITHUB_CLIENT_ID: z.string().min(1),
 	GITHUB_CLIENT_SECRET: z.string().min(1),
-	NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
+	NODE_ENV: z.enum(["development", "production", "test"]).default("production"),
 	SITE_URL: z.string().default("https://solberg.is"),
 	ONEDOLLARSTATS_API_KEY: z.string().min(1),
 });
