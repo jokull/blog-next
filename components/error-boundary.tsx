@@ -3,13 +3,13 @@
 import type { ReactNode } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 
-function fallbackRender({ error }: { error: Error }) {
-	// Call resetErrorBoundary() to reset the error boundary and retry the render.
-
+function fallbackRender({ error }: { error: unknown }) {
 	return (
 		<div role="alert">
 			<p>Something went wrong:</p>
-			<pre style={{ color: "red" }}>{error.message}</pre>
+			<pre style={{ color: "red" }}>
+				{Error.isError(error) ? error.message : String(error)}
+			</pre>
 		</div>
 	);
 }
