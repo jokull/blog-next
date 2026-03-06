@@ -72,7 +72,7 @@ const route = app
 		return c.json({ posts });
 	})
 	.get("/posts/:slug", authMiddleware, async (c) => {
-		const slug = c.req.param("slug");
+		const slug = c.req.param("slug")!;
 		const post = await db.query.Post.findFirst({
 			where: eq(Post.slug, slug),
 		});
@@ -109,7 +109,7 @@ const route = app
 		return c.json({ success: true });
 	})
 	.delete("/posts/:slug", authMiddleware, async (c) => {
-		const slug = c.req.param("slug");
+		const slug = c.req.param("slug")!;
 		await db.delete(Post).where(eq(Post.slug, slug));
 		return c.json({ success: true });
 	})

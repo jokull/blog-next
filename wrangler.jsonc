@@ -15,6 +15,7 @@
 			"database_id": "51a6e936-c76d-43d9-8633-b412ad365dba",
 		},
 	],
+	"routes": [{ "pattern": "www.solberg.is", "custom_domain": true }],
 	"assets": {
 		"not_found_handling": "none",
 		"directory": "dist/client",
