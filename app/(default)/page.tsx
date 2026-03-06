@@ -45,7 +45,19 @@ export default async function Page() {
 	return (
 		<div className="max-w-xl">
 			<Suspense fallback={<div>Loading posts...</div>}>
-				<PostList posts={posts} commentCounts={commentCountsMap} categories={categories} />
+				<PostList
+					posts={posts.map((post) => ({
+						...post,
+						formattedDate: post.publishedAt.toLocaleDateString(post.locale, {
+							year: undefined,
+							month: "short",
+							day: "numeric",
+						}),
+						year: post.publishedAt.getFullYear().toString(),
+					}))}
+					commentCounts={commentCountsMap}
+					categories={categories}
+				/>
 			</Suspense>
 
 			<div className="mb-7">

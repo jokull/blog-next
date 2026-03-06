@@ -17,6 +17,8 @@ interface Post {
 	publishedAt: Date;
 	locale: "is" | "en";
 	categorySlug: string | null;
+	formattedDate: string;
+	year: string;
 }
 
 interface PostListProps {
@@ -39,7 +41,7 @@ export function PostList({ posts, commentCounts, categories }: PostListProps) {
 
 		const grouped = pipe(
 			filtered,
-			groupBy((post) => post.publishedAt.getFullYear().toString()),
+			groupBy((post) => post.year),
 		);
 
 		return {
@@ -48,7 +50,7 @@ export function PostList({ posts, commentCounts, categories }: PostListProps) {
 		};
 	}, [posts, categorySlug]);
 
-	const currentYear = new Date().getFullYear().toString();
+	const currentYear = String(new Date().getFullYear());
 
 	const handleCategoryChange = (value: string) => {
 		const params = new URLSearchParams(searchParams.toString());
@@ -105,11 +107,7 @@ export function PostList({ posts, commentCounts, categories }: PostListProps) {
 									</span>
 									<span className="dot-leaders mb-[0.1rem] flex-1 font-normal text-neutral-200 text-sm leading-none transition-colors group-hover:text-neutral-500 group-hover:transition-none" />
 									<time className="block self-start whitespace-nowrap font-normal text-neutral-400 tabular-nums tracking-tighter transition-colors group-hover:text-neutral-500 group-hover:transition-none">
-										{item.publishedAt.toLocaleDateString(item.locale, {
-											year: undefined,
-											month: "short",
-											day: "numeric",
-										})}
+										{item.formattedDate}
 									</time>
 								</Link>
 							</li>
