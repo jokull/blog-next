@@ -45,16 +45,22 @@ export default function Navbar() {
 					</div>
 				</a>
 				<div className="flex flex-col gap-2 text-right">
-					<Item href="mailto:jokull@solberg.is">email</Item>
+					<a
+						href="mailto:jokull@solberg.is"
+						className="text-blue-500 hover:text-blue-600 leading-tight block w-full"
+					>
+						email
+					</a>
 					<Item href="https://x.com/jokull">x.com/jokull</Item>
 					<Item href="https://github.com/jokull/blog-next">source</Item>
-					<Item
+					<a
 						href="https://calendar.app.google/CbGee9NZCYu7gKhLA"
 						target="_blank"
 						rel="noopener"
+						className="text-blue-500 hover:text-blue-600 leading-tight block w-full"
 					>
 						meeting
-					</Item>
+					</a>
 				</div>
 			</div>
 		</nav>
