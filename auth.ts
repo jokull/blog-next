@@ -3,50 +3,13 @@ import { getIronSession } from "iron-session";
 import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { env } from "@/env";
+import { fetchAuthenticatedUser, fetchGithubUser } from "@/lib/github";
 
 export function getOauthClient(redirectUri: string = "") {
 	return new GitHub(env.GITHUB_CLIENT_ID, env.GITHUB_CLIENT_SECRET, redirectUri);
 }
 
-export async function whoami(accessToken: string) {
-	const res = await fetch("https://api.github.com/user", {
-		headers: {
-			Accept: "application/vnd.github+json",
-			Authorization: `Bearer ${accessToken}`,
-			"User-Agent": "solberg-blog",
-			"X-GitHub-Api-Version": "2022-11-28",
-		},
-	});
-	if (!res.ok) {
-		throw new Error(`GitHub API error: ${res.status}`);
-	}
-	return res.json() as Promise<{
-		email: string;
-		id: number;
-		login: string;
-		name: string | null;
-		avatar_url: string;
-	}>;
-}
-
-export async function getGithubUser(username: string) {
-	// Fetch public GitHub user info
-	const user = await fetch(`https://api.github.com/users/${username}`, {
-		headers: {
-			Accept: "application/vnd.github+json",
-			"X-GitHub-Api-Version": "2022-11-28",
-		},
-	}).then(
-		(res) =>
-			res.json() as Promise<{
-				id: number;
-				login: string;
-				name: string | null;
-				avatar_url: string;
-			}>,
-	);
-	return user;
-}
+export { fetchAuthenticatedUser as whoami, fetchGithubUser as getGithubUser };
 
 export async function requireAuth(currentUrl?: string) {
 	const session = await getSession();
@@ -84,7 +47,7 @@ export async function requireAdmin(currentUrl?: string) {
 }
 
 export async function getSession() {
-	return await getIronSession<{
+	return getIronSession<{
 		githubUsername?: string;
 	}>(await cookies(), {
 		cookieName: "auth",

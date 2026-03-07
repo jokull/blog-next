@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { safeFetchJson, safeZodParse } from "@/lib/safe-utils";
 
 const showSchema = z.object({
 	title: z.string(),
@@ -6,13 +7,11 @@ const showSchema = z.object({
 	poster: z.string(),
 });
 
+const showsSchema = z.array(showSchema);
+
 export async function RecentShows() {
-	const shows = await fetch("https://personal.plex.uno/recent-shows", {
-		cache: "no-cache",
-	})
-		.then((r) => r.json())
-		.then((data) => z.array(showSchema).parse(data))
-		.catch(() => []);
+	const result = await safeFetchJson("https://personal.plex.uno/recent-shows");
+	const shows = result.andThen(safeZodParse(showsSchema)).unwrapOr([]);
 
 	return (
 		<div className="-mx-6 flex gap-3 overflow-y-auto px-6 sm:grid sm:grid-cols-3 md:grid-cols-5 *:shrink-0 sm:*:w-auto">

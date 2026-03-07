@@ -36,7 +36,7 @@ export function AddCategoryDialog({ isOpen, onClose }: AddCategoryDialogProps) {
 				setSlug("");
 				setLabel("");
 			} catch (err) {
-				setError((err as Error).message);
+				setError(err instanceof Error ? err.message : String(err));
 			}
 		})();
 	};

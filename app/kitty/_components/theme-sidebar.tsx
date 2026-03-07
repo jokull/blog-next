@@ -9,7 +9,7 @@ import { TextField } from "@/components/ui/text-field";
 import { useRouter, usePathname } from "next/navigation";
 import type { ChangeEvent } from "react";
 import { useMemo, useState, useTransition } from "react";
-import { useKittyContext, type SidebarTab } from "../_context/kitty-context";
+import { isSidebarTab, useKittyContext } from "../_context/kitty-context";
 import { defaultTheme } from "../_lib/default-theme";
 import { communityFileToSlug } from "../_lib/slug-utils";
 import type { KittyTheme } from "../_lib/types";
@@ -80,9 +80,9 @@ export function ThemeSidebar() {
 
 	// Handle tab change - trigger lazy load for community
 	const handleTabChange = (key: React.Key) => {
-		const tab = key as SidebarTab;
-		setActiveTab(tab);
-		if (tab === "community" && communityThemes === null && !communityLoading) {
+		if (!isSidebarTab(key)) return;
+		setActiveTab(key);
+		if (key === "community" && communityThemes === null && !communityLoading) {
 			void loadCommunityThemes();
 		}
 	};

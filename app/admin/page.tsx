@@ -40,8 +40,8 @@ export default async function AdminPage() {
 		statsClient.getWeeklyVisits("6mo"),
 	]);
 
-	const shortTermData = dailyResult.match(
-		(data) =>
+	const shortTermData = dailyResult.match({
+		ok: (data) =>
 			data.map((day) => ({
 				date: new Date(day.date).toLocaleDateString("en-US", {
 					month: "short",
@@ -51,11 +51,11 @@ export default async function AdminPage() {
 				Visits: day.visits,
 				Pageviews: day.pageviews,
 			})),
-		() => null,
-	);
+		err: () => null,
+	});
 
-	const longTermData = weeklyResult.match(
-		(data) =>
+	const longTermData = weeklyResult.match({
+		ok: (data) =>
 			data.map((week) => ({
 				date: new Date(week.date).toLocaleDateString("en-US", {
 					month: "short",
@@ -65,8 +65,8 @@ export default async function AdminPage() {
 				Visits: week.visits,
 				Pageviews: week.pageviews,
 			})),
-		() => null,
-	);
+		err: () => null,
+	});
 
 	return (
 		<div className="container mx-auto max-w-7xl px-4 py-8">

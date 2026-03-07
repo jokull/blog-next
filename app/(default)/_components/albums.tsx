@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { safeFetchJson, safeZodParse } from "@/lib/safe-utils";
 
 const albumSchema = z.object({
 	title: z.string(),
@@ -6,13 +7,11 @@ const albumSchema = z.object({
 	coverPath: z.string(),
 });
 
+const albumsSchema = z.array(albumSchema);
+
 export async function Albums() {
-	const albums = await fetch("https://personal.plex.uno/random-albums", {
-		cache: "no-cache",
-	})
-		.then((r) => r.json())
-		.then((data) => z.array(albumSchema).parse(data))
-		.catch(() => []);
+	const result = await safeFetchJson("https://personal.plex.uno/random-albums");
+	const albums = result.andThen(safeZodParse(albumsSchema)).unwrapOr([]);
 
 	return (
 		<div className="-mx-6">

@@ -4,11 +4,10 @@ import { cache } from "react";
 import { db } from "@/db";
 import { Post } from "../../../../schema";
 
-const getPost = cache(
-	async (slug: string) =>
-		await db.query.Post.findFirst({
-			where: eq(Post.slug, slug),
-		}),
+const getPost = cache((slug: string) =>
+	db.query.Post.findFirst({
+		where: eq(Post.slug, slug),
+	}),
 );
 
 export async function GET(

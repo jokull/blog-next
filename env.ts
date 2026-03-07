@@ -12,6 +12,7 @@ type Env = z.infer<typeof envSchema>;
 
 let _env: Env | undefined;
 
+// oxlint-disable-next-line typescript-eslint/no-unsafe-type-assertion
 export const env = new Proxy({} as Env, {
 	get(_, prop: string) {
 		if (!_env) {
@@ -24,6 +25,7 @@ export const env = new Proxy({} as Env, {
 				return process.env[prop];
 			}
 		}
+		// oxlint-disable-next-line typescript-eslint/no-unsafe-type-assertion
 		return _env[prop as keyof Env];
 	},
 });

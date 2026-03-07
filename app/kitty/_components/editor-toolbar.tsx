@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import type { KittyTheme } from "../_lib/types";
 import { oklchToString } from "../_lib/color-utils";
-import { colorLabels } from "../_lib/types";
+import { colorLabels, isColorKey } from "../_lib/types";
 
 export type EditorMode = "view" | "edit" | "draft";
 
@@ -57,7 +57,8 @@ export function EditorToolbar({
 		lines.push("# ANSI colors (OKLCH - adjust L/C/H independently)");
 
 		for (let i = 0; i <= 15; i++) {
-			const key = `color${i}` as keyof typeof theme.colors;
+			const key = `color${i}`;
+			if (!isColorKey(key)) continue;
 			const color = theme.colors[key];
 			const label = colorLabels[key];
 			const paddedKey = key.padEnd(8);

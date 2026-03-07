@@ -1,4 +1,5 @@
 "use client";
+// oxlint-disable typescript-eslint/no-unsafe-type-assertion
 
 import { composeRenderProps } from "react-aria-components";
 import { type ClassNameValue, twMerge } from "tailwind-merge";

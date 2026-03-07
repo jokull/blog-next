@@ -18,7 +18,7 @@ export function CategoryManager({ categories, postCounts }: CategoryManagerProps
 		try {
 			await deleteCategory(slug);
 		} catch (error) {
-			alert((error as Error).message);
+			alert(error instanceof Error ? error.message : String(error));
 		}
 	};
 

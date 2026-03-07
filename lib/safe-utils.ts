@@ -1,29 +1,29 @@
-import { err, ok, type Result, ResultAsync, errAsync } from "neverthrow";
-import type { z, ZodError, ZodSchema } from "zod";
+import { Result, TaggedError } from "better-result";
+import type { z, ZodSchema } from "zod";
 
-interface ZodParseError<T> {
-	type: "zod";
-	errors: ZodError<T>;
-}
+export class FetchError extends TaggedError("FetchError")<{
+	message: string;
+	cause: unknown;
+}>() {}
 
-interface NetworkError {
-	type: "network";
-	error: Error;
-}
-
-interface HttpError<E = unknown> {
-	type: "http";
+export class HttpError extends TaggedError("HttpError")<{
+	message: string;
 	status: number;
 	headers: Headers;
-	json?: E;
-}
+	json?: unknown;
+}>() {}
 
-interface ParseError {
-	type: "parse";
-	error: Error;
-}
+export class ParseError extends TaggedError("ParseError")<{
+	message: string;
+	cause: unknown;
+}>() {}
 
-export type FetchError<E> = NetworkError | HttpError<E> | ParseError;
+export class ZodParseError extends TaggedError("ZodParseError")<{
+	message: string;
+	errors: z.ZodError;
+}>() {}
+
+export type FetchJsonError = FetchError | HttpError | ParseError;
 
 /**
  * Safe wrapper around Zod schema parsing that returns a Result type
@@ -31,46 +31,65 @@ export type FetchError<E> = NetworkError | HttpError<E> | ParseError;
  */
 export function safeZodParse<TSchema extends ZodSchema>(
 	schema: TSchema,
-): (data: unknown) => Result<z.infer<TSchema>, ZodParseError<z.infer<TSchema>>> {
+): (data: unknown) => Result<z.infer<TSchema>, ZodParseError> {
 	return (data: unknown) => {
 		const result = schema.safeParse(data);
-		return result.success ? ok(result.data) : err({ type: "zod", errors: result.error });
+		return result.success
+			? Result.ok(result.data)
+			: Result.err(
+					new ZodParseError({ message: result.error.message, errors: result.error }),
+				);
 	};
 }
 
 /**
- * Safe wrapper around fetch that returns a ResultAsync with typed errors.
- * Handles network errors, HTTP errors, and JSON parsing errors.
+ * Safe wrapper around fetch that returns a Result with typed errors.
  */
-export function safeFetch<T = unknown, E = unknown>(
+export async function safeFetch(
 	input: URL | string,
 	init?: RequestInit,
-): ResultAsync<T, FetchError<E>> {
-	return ResultAsync.fromPromise(
-		fetch(input, init),
-		(error): NetworkError => ({
-			type: "network",
-			error: error instanceof Error ? error : new Error(String(error)),
-		}),
-	).andThen((response) => {
-		if (!response.ok) {
-			return ResultAsync.fromSafePromise(response.json().catch(() => undefined)).andThen(
-				(json) =>
-					errAsync({
-						type: "http" as const,
-						status: response.status,
-						headers: response.headers,
-						json: json as E,
-					}),
-			);
-		}
+): Promise<Result<Response, FetchError>> {
+	return Result.tryPromise({
+		try: () => fetch(input, init),
+		catch: (cause) =>
+			new FetchError({
+				message: cause instanceof Error ? cause.message : String(cause),
+				cause,
+			}),
+	});
+}
 
-		return ResultAsync.fromPromise(
-			response.json() as Promise<T>,
-			(error): ParseError => ({
-				type: "parse",
-				error: error instanceof Error ? error : new Error(String(error)),
+/**
+ * Safe wrapper around fetch + JSON parsing with typed errors.
+ */
+export async function safeFetchJson<T = unknown>(
+	input: URL | string,
+	init?: RequestInit,
+): Promise<Result<T, FetchJsonError>> {
+	const fetchResult = await safeFetch(input, init);
+	if (fetchResult.isErr()) return fetchResult;
+
+	const response = fetchResult.value;
+
+	if (!response.ok) {
+		const json: unknown = await response.json().catch(() => undefined);
+		return Result.err(
+			new HttpError({
+				message: `HTTP ${response.status}`,
+				status: response.status,
+				headers: response.headers,
+				json,
 			}),
 		);
+	}
+
+	return Result.tryPromise({
+		// oxlint-disable-next-line typescript-eslint/no-unsafe-type-assertion
+		try: () => response.json() as Promise<T>,
+		catch: (cause) =>
+			new ParseError({
+				message: cause instanceof Error ? cause.message : String(cause),
+				cause,
+			}),
 	});
 }

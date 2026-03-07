@@ -1,7 +1,7 @@
-import { ResultAsync } from "neverthrow";
+import type { Result } from "better-result";
 import { z } from "zod";
 import { env } from "@/env";
-import { safeFetch, safeZodParse, type FetchError } from "./safe-utils";
+import { safeFetchJson, safeZodParse, type FetchJsonError, type ZodParseError } from "./safe-utils";
 
 const API_ENDPOINT = "https://api.onedollarstats.com/api";
 const SITE = "solberg.is";
@@ -63,12 +63,7 @@ export type DailyVisit = z.infer<typeof dailyVisitSchema>;
 export type Stats = z.infer<typeof statsSchema>;
 
 // Error types
-interface ApiError {
-	type: "api_error";
-	message: string;
-}
-
-type OneDollarStatsError = FetchError<unknown> | ApiError | { type: "zod"; errors: z.ZodError };
+type OneDollarStatsError = FetchJsonError | ZodParseError;
 
 interface OneDollarStatsRequest {
 	site_id: string;
@@ -97,10 +92,10 @@ export class OneDollarStatsClient {
 		this.siteId = siteId;
 	}
 
-	private request(
+	private async request(
 		body: Omit<OneDollarStatsRequest, "site_id">,
-	): ResultAsync<OneDollarStatsResponse, OneDollarStatsError> {
-		return safeFetch(API_ENDPOINT, {
+	): Promise<Result<OneDollarStatsResponse, OneDollarStatsError>> {
+		const fetchResult = await safeFetchJson(API_ENDPOINT, {
 			method: "POST",
 			headers: {
 				"x-api-key": this.apiKey,
@@ -110,72 +105,67 @@ export class OneDollarStatsClient {
 				...body,
 				site_id: this.siteId,
 			}),
-		}).andThen((data) => {
-			const parseResult = safeZodParse(oneDollarStatsResponseSchema)(data);
-			return parseResult.isOk()
-				? ResultAsync.fromSafePromise(Promise.resolve(parseResult.value))
-				: ResultAsync.fromSafePromise(
-						Promise.reject({ type: "zod" as const, errors: parseResult.error.errors }),
-					);
 		});
+		if (fetchResult.isErr()) return fetchResult;
+		return safeZodParse(oneDollarStatsResponseSchema)(fetchResult.value);
 	}
 
 	/**
 	 * Get daily visits for a given date range
-	 * @param dateRange - Date range (e.g., "7d", "30d", ["2024-01-01", "2024-01-31"])
-	 * @returns ResultAsync with array of daily visit data or error
 	 */
-	getDailyVisits(dateRange: DateRange = "30d"): ResultAsync<DailyVisit[], OneDollarStatsError> {
-		return this.request({
+	async getDailyVisits(
+		dateRange: DateRange = "30d",
+	): Promise<Result<DailyVisit[], OneDollarStatsError>> {
+		const result = await this.request({
 			metrics: ["visitors", "visits", "pageviews"],
 			date_range: dateRange,
 			dimensions: ["time:day"],
 			order_by: [["time:day", "asc"]],
-		}).map((response) =>
-			response.results.map((result) => ({
-				date: result.dimensions[0],
-				visitors: result.metrics[0],
-				visits: result.metrics[1],
-				pageviews: result.metrics[2],
+		});
+		return result.map((response) =>
+			response.results.map((r) => ({
+				date: r.dimensions[0],
+				visitors: r.metrics[0],
+				visits: r.metrics[1],
+				pageviews: r.metrics[2],
 			})),
 		);
 	}
 
 	/**
 	 * Get weekly visits for a given date range
-	 * @param dateRange - Date range (e.g., "30d", "6mo", "year")
-	 * @returns ResultAsync with array of weekly visit data or error
 	 */
-	getWeeklyVisits(dateRange: DateRange = "6mo"): ResultAsync<DailyVisit[], OneDollarStatsError> {
-		return this.request({
+	async getWeeklyVisits(
+		dateRange: DateRange = "6mo",
+	): Promise<Result<DailyVisit[], OneDollarStatsError>> {
+		const result = await this.request({
 			metrics: ["visitors", "visits", "pageviews"],
 			date_range: dateRange,
 			dimensions: ["time:week"],
 			order_by: [["time:week", "asc"]],
-		}).map((response) =>
-			response.results.map((result) => ({
-				date: result.dimensions[0],
-				visitors: result.metrics[0],
-				visits: result.metrics[1],
-				pageviews: result.metrics[2],
+		});
+		return result.map((response) =>
+			response.results.map((r) => ({
+				date: r.dimensions[0],
+				visitors: r.metrics[0],
+				visits: r.metrics[1],
+				pageviews: r.metrics[2],
 			})),
 		);
 	}
 
 	/**
 	 * Get aggregate stats for a date range
-	 * @param dateRange - Date range (e.g., "7d", "30d")
-	 * @returns ResultAsync with aggregate stats or error
 	 */
-	getStats(dateRange: DateRange = "30d"): ResultAsync<Stats, OneDollarStatsError> {
-		return this.request({
+	async getStats(dateRange: DateRange = "30d"): Promise<Result<Stats, OneDollarStatsError>> {
+		const result = await this.request({
 			metrics: ["visitors", "visits", "pageviews"],
 			date_range: dateRange,
-		}).map((response) => {
+		});
+		return result.map((response) => {
 			if (response.results.length === 0) {
 				return { visitors: 0, visits: 0, pageviews: 0 };
 			}
-
 			const [visitors, visits, pageviews] = response.results[0].metrics;
 			return { visitors, visits, pageviews };
 		});

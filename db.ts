@@ -6,7 +6,7 @@ import * as schema from "./schema";
 let _db: DrizzleD1Database<typeof schema> | undefined;
 
 export function getDb() {
-	// oxlint-disable-next-line typescript-eslint/no-unsafe-member-access
+	// oxlint-disable-next-line typescript-eslint/no-unsafe-member-access, typescript-eslint/no-unsafe-type-assertion
 	_db ??= drizzle((env as Record<string, unknown>).DB as Parameters<typeof drizzle>[0], {
 		schema,
 	});
@@ -14,9 +14,11 @@ export function getDb() {
 }
 
 // Proxy so existing `import { db }` calls keep working
+// oxlint-disable-next-line typescript-eslint/no-unsafe-type-assertion
 export const db = new Proxy({} as DrizzleD1Database<typeof schema>, {
 	get(_, prop) {
 		const real = getDb();
+		// oxlint-disable-next-line typescript-eslint/no-unsafe-type-assertion
 		const value = real[prop as keyof typeof real];
 		if (typeof value === "function") {
 			return value.bind(real);

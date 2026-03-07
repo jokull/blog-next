@@ -1,5 +1,7 @@
 /* eslint-disable no-console */
 import { existsSync, readFileSync, unlinkSync, writeFileSync } from "node:fs";
+import { z } from "zod";
+import { safeFetchJson, safeZodParse } from "../lib/safe-utils";
 
 const SESSION_FILE = `${process.env.HOME}/.blog-cli-session`;
 
@@ -21,34 +23,37 @@ export function clearToken() {
 	}
 }
 
-interface DeviceCodeResponse {
-	device_code: string;
-	user_code: string;
-	verification_uri: string;
-	expires_in: number;
-	interval: number;
-}
+const oauthConfigSchema = z.object({
+	clientId: z.string(),
+});
 
-interface TokenResponse {
-	access_token?: string;
-	token_type?: string;
-	scope?: string;
-	error?: string;
-	error_description?: string;
-	interval?: number;
-}
+const deviceCodeSchema = z.object({
+	device_code: z.string(),
+	user_code: z.string(),
+	verification_uri: z.string(),
+	expires_in: z.number(),
+	interval: z.number(),
+});
+
+const tokenResponseSchema = z.object({
+	access_token: z.string().optional(),
+	token_type: z.string().optional(),
+	scope: z.string().optional(),
+	error: z.string().optional(),
+	error_description: z.string().optional(),
+	interval: z.number().optional(),
+});
 
 async function fetchClientId(apiBase: string): Promise<string> {
-	const res = await fetch(`${apiBase}/api/oauth-config`);
-	if (!res.ok) {
-		throw new Error(`Failed to fetch OAuth config: ${res.status}`);
-	}
-	const data = (await res.json()) as { clientId: string };
+	const result = await safeFetchJson(`${apiBase}/api/oauth-config`);
+	const data = result
+		.andThen(safeZodParse(oauthConfigSchema))
+		.unwrap("Failed to fetch OAuth config");
 	return data.clientId;
 }
 
-async function requestDeviceCode(clientId: string): Promise<DeviceCodeResponse> {
-	const res = await fetch("https://github.com/login/device/code", {
+async function requestDeviceCode(clientId: string) {
+	const result = await safeFetchJson("https://github.com/login/device/code", {
 		method: "POST",
 		headers: {
 			Accept: "application/json",
@@ -59,12 +64,7 @@ async function requestDeviceCode(clientId: string): Promise<DeviceCodeResponse> 
 			scope: "user:email",
 		}),
 	});
-
-	if (!res.ok) {
-		throw new Error(`Failed to request device code: ${res.status}`);
-	}
-
-	return res.json() as Promise<DeviceCodeResponse>;
+	return result.andThen(safeZodParse(deviceCodeSchema)).unwrap("Failed to request device code");
 }
 
 async function pollForToken(
@@ -77,7 +77,7 @@ async function pollForToken(
 	for (;;) {
 		await new Promise((resolve) => setTimeout(resolve, pollInterval));
 
-		const res = await fetch("https://github.com/login/oauth/access_token", {
+		const result = await safeFetchJson("https://github.com/login/oauth/access_token", {
 			method: "POST",
 			headers: {
 				Accept: "application/json",
@@ -90,7 +90,9 @@ async function pollForToken(
 			}),
 		});
 
-		const data = (await res.json()) as TokenResponse;
+		const data = result
+			.andThen(safeZodParse(tokenResponseSchema))
+			.unwrap("OAuth token poll failed");
 
 		if (data.access_token) {
 			return data.access_token;

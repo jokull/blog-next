@@ -29,7 +29,7 @@ export async function getPublishedThemes(): Promise<KittyThemeType[]> {
 		(t): KittyThemeType => ({
 			...t,
 			blurb: t.blurb ?? null,
-			colors: t.colors as KittyThemeType["colors"],
+			colors: t.colors,
 		}),
 	);
 }
@@ -48,7 +48,7 @@ export async function getUserThemes(): Promise<KittyThemeType[]> {
 		(t): KittyThemeType => ({
 			...t,
 			blurb: t.blurb ?? null,
-			colors: t.colors as KittyThemeType["colors"],
+			colors: t.colors,
 		}),
 	);
 }
@@ -83,7 +83,7 @@ export async function createTheme(data: {
 	return {
 		...theme[0],
 		blurb: theme[0].blurb ?? null,
-		colors: theme[0].colors as KittyThemeType["colors"],
+		colors: theme[0].colors,
 	} as KittyThemeType;
 }
 
@@ -123,7 +123,7 @@ export async function updateTheme(
 	return {
 		...updated[0],
 		blurb: updated[0].blurb ?? null,
-		colors: updated[0].colors as KittyThemeType["colors"],
+		colors: updated[0].colors,
 	} as KittyThemeType;
 }
 
@@ -152,7 +152,7 @@ export async function togglePublish(id: number) {
 	return {
 		...updated[0],
 		blurb: updated[0].blurb ?? null,
-		colors: updated[0].colors as KittyThemeType["colors"],
+		colors: updated[0].colors,
 	} as KittyThemeType;
 }
 
@@ -189,7 +189,7 @@ export async function forkTheme(originalId: number) {
 	return {
 		...forked[0],
 		blurb: forked[0].blurb ?? null,
-		colors: forked[0].colors as KittyThemeType["colors"],
+		colors: forked[0].colors,
 	} as KittyThemeType;
 }
 
@@ -224,7 +224,7 @@ export async function getThemeBySlug(slug: string): Promise<KittyThemeType | nul
 	return {
 		...theme,
 		blurb: theme.blurb ?? null,
-		colors: theme.colors as KittyThemeType["colors"],
+		colors: theme.colors,
 	} as KittyThemeType;
 }
 
@@ -239,7 +239,7 @@ export async function getForkedFromTheme(forkedFromId: number): Promise<KittyThe
 	return {
 		...theme,
 		blurb: theme.blurb ?? null,
-		colors: theme.colors as KittyThemeType["colors"],
+		colors: theme.colors,
 	} as KittyThemeType;
 }
 
@@ -257,7 +257,7 @@ export async function getThemeById(id: number): Promise<KittyThemeType | null> {
 		return {
 			...theme,
 			blurb: theme.blurb ?? null,
-			colors: theme.colors as KittyThemeType["colors"],
+			colors: theme.colors,
 		} as KittyThemeType;
 	}
 
@@ -273,6 +273,6 @@ export async function getThemeById(id: number): Promise<KittyThemeType | null> {
 	return {
 		...theme,
 		blurb: theme.blurb ?? null,
-		colors: theme.colors as KittyThemeType["colors"],
+		colors: theme.colors,
 	} as KittyThemeType;
 }

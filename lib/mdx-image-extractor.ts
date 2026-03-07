@@ -9,9 +9,17 @@ interface ImageNode extends Image {
 	type: "image";
 }
 
+function isImageNode(node: { type: string }): node is ImageNode {
+	return node.type === "image";
+}
+
 interface JSXImageNode extends MdxJsxFlowElement {
 	type: "mdxJsxFlowElement";
 	name: "Image";
+}
+
+function isJSXImageNode(node: { type: string }): node is JSXImageNode {
+	return node.type === "mdxJsxFlowElement" && "name" in node && node.name === "Image";
 }
 
 export async function extractFirstImage(markdown: string): Promise<string | null> {
@@ -30,17 +38,15 @@ export async function extractFirstImage(markdown: string): Promise<string | null
 		visit(tree, (node, index, parent) => {
 			if (firstImageSrc) return false;
 
-			if (node.type === "image") {
-				const imageNode = node as ImageNode;
-				if (imageNode.url && isTopLevel(parent, index)) {
-					firstImageSrc = imageNode.url;
+			if (isImageNode(node)) {
+				if (node.url && isTopLevel(parent, index)) {
+					firstImageSrc = node.url;
 					return false;
 				}
 			}
 
-			if (node.type === "mdxJsxFlowElement" && node.name === "Image") {
-				const jsxNode = node as JSXImageNode;
-				const srcAttr = jsxNode.attributes.find(
+			if (isJSXImageNode(node)) {
+				const srcAttr = node.attributes.find(
 					(attr) => attr.type === "mdxJsxAttribute" && attr.name === "src",
 				);
 

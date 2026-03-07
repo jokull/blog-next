@@ -70,7 +70,7 @@ export function PostList({ posts, commentCounts, categories }: PostListProps) {
 					selectionMode="single"
 					selectedKeys={[categorySlug]}
 					onSelectionChange={(keys) => {
-						const selected = Array.from(keys)[0] as string;
+						const selected = String(Array.from(keys)[0]);
 						if (selected) {
 							handleCategoryChange(selected);
 						}

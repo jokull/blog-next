@@ -7,6 +7,11 @@ import type { KittyTheme } from "../_lib/types";
 
 export type SidebarTab = "community" | "published" | "my-themes";
 
+const sidebarTabs = new Set<string>(["community", "published", "my-themes"]);
+export function isSidebarTab(key: unknown): key is SidebarTab {
+	return typeof key === "string" && sidebarTabs.has(key);
+}
+
 interface KittyContextValue {
 	// Server-provided data
 	publishedThemes: KittyTheme[];

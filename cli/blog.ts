@@ -6,6 +6,11 @@ import { parseArgs } from "node:util";
 import { clearToken, getStoredToken, login } from "./auth";
 import { API_BASE, createClient } from "./client";
 
+function parseLocale(value: string | undefined): "en" | "is" | undefined {
+	if (value === "en" || value === "is") return value;
+	return undefined;
+}
+
 const ICLOUD_DOCUMENTS = `${process.env.HOME}/Library/Mobile Documents/com~apple~CloudDocs/Documents`;
 const BACKUP_DIR = join(ICLOUD_DOCUMENTS, "blog-backup");
 
@@ -181,7 +186,7 @@ async function handleCreate() {
 	let body = values.body;
 	const bodyFile = values["body-file"];
 	const category = values.category;
-	const locale = values.locale as "en" | "is" | undefined;
+	const locale = parseLocale(values.locale);
 	const heroImage = values["hero-image"];
 
 	if (!slug) {
@@ -235,7 +240,7 @@ async function handleUpdate(slug: string) {
 	let body = values.body;
 	const bodyFile = values["body-file"];
 	const category = values.category;
-	const locale = values.locale as "en" | "is" | undefined;
+	const locale = parseLocale(values.locale);
 	const heroImage = values["hero-image"];
 	const shouldPublish = values.publish;
 	const shouldUnpublish = values.unpublish;

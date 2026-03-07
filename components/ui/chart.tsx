@@ -1,4 +1,5 @@
 // Documentation: https://intentui.com/docs/components/visualizations/chart.md
+// oxlint-disable typescript-eslint/no-unsafe-type-assertion
 
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cx } from "@/lib/primitive";

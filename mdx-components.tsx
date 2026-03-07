@@ -195,6 +195,7 @@ export const components: MDXComponents = {
 			);
 		} else {
 			try {
+				// oxlint-disable-next-line typescript-eslint/no-unsafe-type-assertion
 				const image = (await import(`./assets/images/${src}`)) as {
 					default: import("next/image").StaticImageData;
 				};
