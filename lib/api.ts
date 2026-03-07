@@ -14,8 +14,10 @@ const app = new Hono().basePath("/api");
 async function verifyGitHubToken(token: string): Promise<string | null> {
 	try {
 		const user = await whoami(token);
+		console.log("verifyGitHubToken result:", JSON.stringify({ login: user.login }));
 		return user.login;
-	} catch {
+	} catch (error) {
+		console.error("verifyGitHubToken error:", error);
 		return null;
 	}
 }
