@@ -9,24 +9,24 @@ export function getOauthClient(redirectUri: string = "") {
 }
 
 export async function whoami(accessToken: string) {
-	// Fetch the authenticated user's information using GitHub API
-	const user = await fetch("https://api.github.com/user", {
+	const res = await fetch("https://api.github.com/user", {
 		headers: {
 			Accept: "application/vnd.github+json",
 			Authorization: `Bearer ${accessToken}`,
+			"User-Agent": "solberg-blog",
 			"X-GitHub-Api-Version": "2022-11-28",
 		},
-	}).then(
-		(res) =>
-			res.json() as Promise<{
-				email: string;
-				id: number;
-				login: string;
-				name: string | null;
-				avatar_url: string;
-			}>,
-	);
-	return user;
+	});
+	if (!res.ok) {
+		throw new Error(`GitHub API error: ${res.status}`);
+	}
+	return res.json() as Promise<{
+		email: string;
+		id: number;
+		login: string;
+		name: string | null;
+		avatar_url: string;
+	}>;
 }
 
 export async function getGithubUser(username: string) {
