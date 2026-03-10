@@ -153,10 +153,7 @@ function getPayloadConfigFromPayload(config: ChartConfig, payload: unknown, key:
 
 // #region Base Chart Components
 
-interface BaseChartProps<
-	TValue extends ValueType,
-	TName extends NameType,
-> extends React.HTMLAttributes<HTMLDivElement> {
+interface BaseChartProps extends React.HTMLAttributes<HTMLDivElement> {
 	containerHeight?: number;
 	config: ChartConfig;
 	data: Record<string, any>[];
@@ -167,8 +164,8 @@ interface BaseChartProps<
 	layout?: ChartLayout;
 	valueFormatter?: (value: number) => string;
 
-	tooltip?: TooltipContentType<TValue, TName> | boolean;
-	tooltipProps?: Omit<ChartTooltipProps<TValue, TName>, "content"> & {
+	tooltip?: TooltipContentType | boolean;
+	tooltipProps?: Omit<ChartTooltipProps, "content"> & {
 		hideLabel?: boolean;
 		labelSeparator?: boolean;
 		hideIndicator?: boolean;
@@ -292,13 +289,9 @@ ${colorConfig
 	);
 };
 
-type ChartTooltipProps<TValue extends ValueType, TName extends NameType> = React.ComponentProps<
-	typeof TooltipPrimitive<TValue, TName>
->;
+type ChartTooltipProps = React.ComponentProps<typeof TooltipPrimitive>;
 
-const ChartTooltip = <TValue extends ValueType, TName extends NameType>(
-	props: ChartTooltipProps<TValue, TName>,
-) => {
+const ChartTooltip = (props: ChartTooltipProps) => {
 	const { layout } = useChart();
 
 	return (

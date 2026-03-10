@@ -3,7 +3,6 @@
 // Documentation: https://intentui.com/docs/components/visualizations/line-chart.md
 
 import { Line, LineChart as LineChartPrimitive, type LineProps } from "recharts";
-import type { NameType, ValueType } from "recharts/types/component/DefaultTooltipContent";
 import {
 	type BaseChartProps,
 	CartesianGrid,
@@ -20,16 +19,13 @@ import {
 	YAxis,
 } from "./chart";
 
-export interface LineChartProps<
-	TValue extends ValueType,
-	TName extends NameType,
-> extends BaseChartProps<TValue, TName> {
+export interface LineChartProps extends BaseChartProps {
 	connectNulls?: boolean;
 	lineProps?: LineProps;
 	chartProps?: Omit<React.ComponentProps<typeof LineChartPrimitive>, "data" | "stackOffset">;
 }
 
-export function LineChart<TValue extends ValueType, TName extends NameType>({
+export function LineChart({
 	data = [],
 	dataKey,
 	colors = DEFAULT_COLORS,
@@ -62,7 +58,7 @@ export function LineChart<TValue extends ValueType, TName extends NameType>({
 	chartProps,
 	lineProps,
 	...props
-}: LineChartProps<TValue, TName>) {
+}: LineChartProps) {
 	const categoryColors = constructCategoryColors(Object.keys(config), colors);
 
 	return (
