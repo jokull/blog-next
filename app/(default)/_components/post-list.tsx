@@ -70,10 +70,8 @@ export function PostList({ posts, commentCounts, categories }: PostListProps) {
 					selectionMode="single"
 					selectedKeys={[categorySlug]}
 					onSelectionChange={(keys) => {
-						const selected = String(Array.from(keys)[0]);
-						if (selected) {
-							handleCategoryChange(selected);
-						}
+						const selected = Array.from(keys)[0];
+						handleCategoryChange(selected ? String(selected) : "all");
 					}}
 				>
 					<ToggleGroupItem id="all">All</ToggleGroupItem>
