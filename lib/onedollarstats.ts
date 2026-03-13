@@ -170,6 +170,28 @@ export class OneDollarStatsClient {
 			return { visitors, visits, pageviews };
 		});
 	}
+
+	/**
+	 * Get pageviews broken down by page path for a given date range
+	 */
+	async getPageviews(
+		dateRange: DateRange = "7d",
+	): Promise<Result<Map<string, number>, OneDollarStatsError>> {
+		const result = await this.request({
+			metrics: ["pageviews"],
+			date_range: dateRange,
+			dimensions: ["event:page"],
+			order_by: [["pageviews", "desc"]],
+			pagination: { limit: 500 },
+		});
+		return result.map((response) => {
+			const map = new Map<string, number>();
+			for (const r of response.results) {
+				map.set(r.dimensions[0], r.metrics[0]);
+			}
+			return map;
+		});
+	}
 }
 
 /**

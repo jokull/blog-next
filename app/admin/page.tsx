@@ -1,8 +1,12 @@
 import { requireAdmin } from "@/auth";
 import { db } from "@/db";
+import { env } from "@/env";
+import { checkPostLinks } from "@/lib/link-checker";
 import { createStatsClient } from "@/lib/onedollarstats";
 import { Category, Post } from "@/schema";
 import { asc, desc, sql } from "drizzle-orm";
+import { Suspense } from "react";
+import { BrokenLinksReport } from "./_components/broken-links-report";
 import { CategoryManager } from "./_components/category-manager";
 import { PostsTable } from "./_components/posts-table";
 import { VisitsChartClient } from "./_components/visits-chart-client";
@@ -33,12 +37,22 @@ export default async function AdminPage() {
 
 	const postCounts = new Map(postCountsResult.map((c) => [c.categorySlug, Number(c.count)]));
 
-	// Fetch visitor stats
+	// Fetch visitor stats + per-page pageviews
 	const statsClient = createStatsClient();
-	const [dailyResult, weeklyResult] = await Promise.all([
+	const [dailyResult, weeklyResult, pageviewsResult] = await Promise.all([
 		statsClient.getDailyVisits("30d"),
 		statsClient.getWeeklyVisits("6mo"),
+		statsClient.getPageviews("7d"),
 	]);
+
+	// Build slug -> pageviews record (paths like "/my-post" -> pageviews)
+	const pageviewsBySlug: Record<string, number> = {};
+	if (pageviewsResult.isOk()) {
+		for (const [path, views] of pageviewsResult.value) {
+			const slug = path.replace(/^\//, "");
+			if (slug) pageviewsBySlug[slug] = views;
+		}
+	}
 
 	const shortTermData = dailyResult.match({
 		ok: (data) =>
@@ -74,7 +88,7 @@ export default async function AdminPage() {
 
 			<CategoryManager categories={categories} postCounts={postCounts} />
 
-			<PostsTable posts={posts} categories={categories} />
+			<PostsTable posts={posts} categories={categories} pageviewsBySlug={pageviewsBySlug} />
 
 			<div className="mt-8">
 				{shortTermData && longTermData ? (
@@ -86,6 +100,28 @@ export default async function AdminPage() {
 					</div>
 				)}
 			</div>
+
+			<div className="mt-8">
+				<Suspense
+					fallback={
+						<div className="rounded-lg border p-6">
+							<h2 className="mb-4 font-semibold text-xl">Broken Links & Images</h2>
+							<div className="animate-pulse text-neutral-400">Checking links...</div>
+						</div>
+					}
+				>
+					<BrokenLinksChecker posts={posts} />
+				</Suspense>
+			</div>
 		</div>
 	);
+}
+
+async function BrokenLinksChecker({
+	posts,
+}: {
+	posts: Array<{ slug: string; title: string; markdown: string }>;
+}) {
+	const brokenLinks = await checkPostLinks(posts, env.SITE_URL);
+	return <BrokenLinksReport brokenLinks={brokenLinks} />;
 }

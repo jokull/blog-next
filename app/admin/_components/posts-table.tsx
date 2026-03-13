@@ -8,14 +8,16 @@ import { PostTableRow } from "./post-table-row";
 interface PostsTableProps {
 	posts: Array<InferSelectModel<typeof Post>>;
 	categories: Array<{ slug: string; label: string }>;
+	pageviewsBySlug: Record<string, number>;
 }
 
-export function PostsTable({ posts, categories }: PostsTableProps) {
+export function PostsTable({ posts, categories, pageviewsBySlug }: PostsTableProps) {
 	return (
 		<div className="w-full overflow-x-auto">
 			<Table aria-label="Blog posts">
 				<TableHeader>
 					<TableColumn isRowHeader>Title</TableColumn>
+					<TableColumn>7d Views</TableColumn>
 					<TableColumn>Published</TableColumn>
 					<TableColumn>Language</TableColumn>
 					<TableColumn>Category</TableColumn>
@@ -24,7 +26,12 @@ export function PostsTable({ posts, categories }: PostsTableProps) {
 				</TableHeader>
 				<TableBody>
 					{posts.map((post) => (
-						<PostTableRow key={post.slug} post={post} categories={categories} />
+						<PostTableRow
+							key={post.slug}
+							post={post}
+							categories={categories}
+							pageviews={pageviewsBySlug[post.slug] ?? 0}
+						/>
 					))}
 				</TableBody>
 			</Table>

@@ -12,9 +12,10 @@ import { useTransition } from "react";
 interface PostTableRowProps {
 	post: InferSelectModel<typeof Post>;
 	categories: Array<{ slug: string; label: string }>;
+	pageviews: number;
 }
 
-export function PostTableRow({ post, categories }: PostTableRowProps) {
+export function PostTableRow({ post, categories, pageviews }: PostTableRowProps) {
 	const [isPending, startTransition] = useTransition();
 
 	const handleTogglePublished = (isSelected: boolean) => {
@@ -38,6 +39,12 @@ export function PostTableRow({ post, categories }: PostTableRowProps) {
 				>
 					{post.title}
 				</Link>
+			</TableCell>
+
+			<TableCell>
+				<span className="tabular-nums text-sm text-neutral-500">
+					{pageviews > 0 ? pageviews.toLocaleString() : "—"}
+				</span>
 			</TableCell>
 
 			<TableCell>
