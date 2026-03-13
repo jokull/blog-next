@@ -2,6 +2,8 @@
 
 import { requireAuth } from "@/auth";
 import { db } from "@/db";
+import { env } from "@/env";
+import { type BrokenLink, checkPostLinks } from "@/lib/link-checker";
 import { Category, Post } from "@/schema";
 import { eq, sql } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
@@ -88,4 +90,10 @@ export async function updatePostCategory(slug: string, categorySlug: string | nu
 		.where(eq(Post.slug, slug));
 
 	revalidatePath("/admin");
+}
+
+export async function runLinkChecker(): Promise<BrokenLink[]> {
+	await requireAuth();
+	const posts = await db.query.Post.findMany();
+	return checkPostLinks(posts, env.SITE_URL);
 }

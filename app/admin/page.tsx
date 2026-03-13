@@ -1,12 +1,9 @@
 import { requireAdmin } from "@/auth";
 import { db } from "@/db";
-import { env } from "@/env";
-import { checkPostLinks } from "@/lib/link-checker";
 import { createStatsClient } from "@/lib/onedollarstats";
 import { Category, Post } from "@/schema";
 import { asc, desc, sql } from "drizzle-orm";
-import { Suspense } from "react";
-import { BrokenLinksReport } from "./_components/broken-links-report";
+import { BrokenLinksPanel } from "./_components/broken-links-panel";
 import { CategoryManager } from "./_components/category-manager";
 import { PostsTable } from "./_components/posts-table";
 import { VisitsChartClient } from "./_components/visits-chart-client";
@@ -102,26 +99,8 @@ export default async function AdminPage() {
 			</div>
 
 			<div className="mt-8">
-				<Suspense
-					fallback={
-						<div className="rounded-lg border p-6">
-							<h2 className="mb-4 font-semibold text-xl">Broken Links & Images</h2>
-							<div className="animate-pulse text-neutral-400">Checking links...</div>
-						</div>
-					}
-				>
-					<BrokenLinksChecker posts={posts} />
-				</Suspense>
+				<BrokenLinksPanel />
 			</div>
 		</div>
 	);
-}
-
-async function BrokenLinksChecker({
-	posts,
-}: {
-	posts: Array<{ slug: string; title: string; markdown: string }>;
-}) {
-	const brokenLinks = await checkPostLinks(posts, env.SITE_URL);
-	return <BrokenLinksReport brokenLinks={brokenLinks} />;
 }
