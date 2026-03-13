@@ -10,7 +10,9 @@ const albumSchema = z.object({
 const albumsSchema = z.array(albumSchema);
 
 export async function Albums() {
-	const result = await safeFetchJson("https://personal.plex.uno/random-albums");
+	const result = await safeFetchJson("https://personal.plex.uno/random-albums", {
+		signal: AbortSignal.timeout(3000),
+	});
 	const albums = result.andThen(safeZodParse(albumsSchema)).unwrapOr([]);
 
 	return (

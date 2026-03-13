@@ -10,7 +10,9 @@ const showSchema = z.object({
 const showsSchema = z.array(showSchema);
 
 export async function RecentShows() {
-	const result = await safeFetchJson("https://personal.plex.uno/recent-shows");
+	const result = await safeFetchJson("https://personal.plex.uno/recent-shows", {
+		signal: AbortSignal.timeout(3000),
+	});
 	const shows = result.andThen(safeZodParse(showsSchema)).unwrapOr([]);
 
 	return (
