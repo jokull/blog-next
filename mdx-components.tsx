@@ -184,7 +184,7 @@ export const components: MDXComponents = {
 	img: async ({ src, alt = "", title }: ImgProps) => {
 		let img: ReactNode;
 
-		if (src.startsWith("https://")) {
+		if (src.startsWith("https://") || src.startsWith("/")) {
 			img = (
 				<img
 					className="mt-7 max-w-[minmax(100%,576px)] rounded-xl"
