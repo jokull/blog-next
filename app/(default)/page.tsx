@@ -14,6 +14,35 @@ export const metadata = {
 	},
 };
 
+function AlbumsSkeleton() {
+	return (
+		<div className="-mx-6">
+			<div className="inline-flex gap-3 overflow-y-auto px-6 md:grid md:w-full md:grid-cols-5 md:overflow-y-visible">
+				{Array.from({ length: 5 }, (_, i) => (
+					<div
+						key={i}
+						className="aspect-square w-24 animate-pulse rounded-sm bg-stone-300 sm:w-32 md:w-full"
+					/>
+				))}
+			</div>
+		</div>
+	);
+}
+
+function ShowsSkeleton() {
+	return (
+		<div className="-mx-6 flex gap-3 overflow-y-auto px-6 sm:grid sm:grid-cols-3 md:grid-cols-5 *:shrink-0 sm:*:w-auto">
+			{Array.from({ length: 5 }, (_, i) => (
+				<div key={i} className="flex flex-col gap-1 shadow-lg">
+					<div className="w-full overflow-hidden rounded">
+						<div className="aspect-10/16 h-full w-24 animate-pulse rounded bg-stone-300 sm:w-32" />
+					</div>
+				</div>
+			))}
+		</div>
+	);
+}
+
 export default async function Page() {
 	// Fetch all posts with category information
 	const posts = await db.query.Post.findMany({
@@ -62,7 +91,7 @@ export default async function Page() {
 
 			<div className="mb-7">
 				<Theater>
-					<Suspense>
+					<Suspense fallback={<AlbumsSkeleton />}>
 						<Albums />
 					</Suspense>
 				</Theater>
@@ -70,7 +99,7 @@ export default async function Page() {
 
 			<div className="mb-7">
 				<Theater>
-					<Suspense>
+					<Suspense fallback={<ShowsSkeleton />}>
 						<RecentShows />
 					</Suspense>
 				</Theater>
