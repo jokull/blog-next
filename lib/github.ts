@@ -29,7 +29,8 @@ export async function fetchAuthenticatedUser(accessToken: string): Promise<GitHu
 
 export async function fetchGithubUser(username: string): Promise<GitHubUser> {
 	const result = await safeFetchJson(`https://api.github.com/users/${username}`, {
-		headers: GITHUB_HEADERS,
+		headers: { ...GITHUB_HEADERS, "User-Agent": "solberg-blog" },
+		signal: AbortSignal.timeout(3000),
 	});
 	return result.andThen(safeZodParse(githubUserSchema)).unwrap("GitHub user fetch error");
 }

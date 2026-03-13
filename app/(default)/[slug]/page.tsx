@@ -94,14 +94,18 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
 
 	let user = null;
 	if (session.githubUsername) {
-		const githubUser = await getGithubUser(session.githubUsername);
-		user = {
-			email: "", // We don't need email for comments
-			githubId: githubUser.id,
-			githubUsername: githubUser.login,
-			name: githubUser.name ?? githubUser.login,
-			avatarUrl: githubUser.avatar_url,
-		};
+		try {
+			const githubUser = await getGithubUser(session.githubUsername);
+			user = {
+				email: "",
+				githubId: githubUser.id,
+				githubUsername: githubUser.login,
+				name: githubUser.name ?? githubUser.login,
+				avatarUrl: githubUser.avatar_url,
+			};
+		} catch (error) {
+			console.error("[github] Failed to fetch user:", error);
+		}
 	}
 
 	// Fetch comments for this post
