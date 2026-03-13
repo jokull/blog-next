@@ -1,13 +1,13 @@
-import type { NextRequest } from "next/server";
-import { NextResponse } from "next/server";
 import { getSession } from "@/auth";
 import { env } from "@/env";
 
-export async function GET(request: NextRequest) {
+export async function GET(request: Request) {
 	// Only allow in development
 	if (env.NODE_ENV !== "development") {
-		return NextResponse.json({ error: "Not available in production" }, { status: 403 });
+		return Response.json({ error: "Not available in production" }, { status: 403 });
 	}
+
+	const url = new URL(request.url);
 
 	// Set the dev session
 	const session = await getSession();
@@ -15,6 +15,6 @@ export async function GET(request: NextRequest) {
 	await session.save();
 
 	// Redirect back to the original URL
-	const nextUrl = request.nextUrl.searchParams.get("next") ?? "/";
-	return NextResponse.redirect(new URL(nextUrl, request.url));
+	const nextUrl = url.searchParams.get("next") ?? "/";
+	return Response.redirect(new URL(nextUrl, request.url).toString(), 302);
 }

@@ -1,7 +1,7 @@
-import type { NextRequest } from "next/server";
 import { requireAuth } from "@/auth";
 
-export async function GET(request: NextRequest) {
-	const nextUrl = request.nextUrl.searchParams.get("next");
+export async function GET(request: Request) {
+	const url = new URL(request.url);
+	const nextUrl = url.searchParams.get("next");
 	await requireAuth(nextUrl ?? "/");
 }

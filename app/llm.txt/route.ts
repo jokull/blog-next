@@ -1,11 +1,10 @@
 import { env } from "@/env";
 import { desc, isNotNull } from "drizzle-orm";
-import { type NextRequest, NextResponse } from "next/server";
 import { groupBy, pipe } from "remeda";
 import { db } from "@/db";
 import { Post } from "../../schema";
 
-export async function GET(_request: NextRequest) {
+export async function GET() {
 	const posts = await db.query.Post.findMany({
 		where: isNotNull(Post.publicAt),
 		orderBy: [desc(Post.publishedAt)],
@@ -39,7 +38,7 @@ export async function GET(_request: NextRequest) {
 
 	const markdown = lines.join("\n");
 
-	return new NextResponse(markdown, {
+	return new Response(markdown, {
 		headers: {
 			"Content-Type": "text/plain; charset=utf-8",
 			"Cache-Control": "public, max-age=3600, s-maxage=3600, stale-while-revalidate=86400",

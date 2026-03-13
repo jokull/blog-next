@@ -1,43 +1,35 @@
-import { type NextRequest, NextResponse } from "next/server";
 import { getOauthClient, getSession, whoami } from "@/auth";
 
-export async function GET(request: NextRequest) {
-	// Extract the authorization code and next URL from query parameters
-	const code = request.nextUrl.searchParams.get("code");
-	const nextUrl = request.nextUrl.searchParams.get("next");
+export async function GET(request: Request) {
+	const url = new URL(request.url);
+	const code = url.searchParams.get("code");
+	const nextUrl = url.searchParams.get("next");
 
 	// Reconstruct the exact redirect URI used in requireAuth (must match for token exchange)
 	const callbackUrl = nextUrl
-		? `https://${request.nextUrl.host}/callback?next=${encodeURIComponent(nextUrl)}`
-		: `https://${request.nextUrl.host}/callback`;
+		? `${url.origin}/callback?next=${encodeURIComponent(nextUrl)}`
+		: `${url.origin}/callback`;
 	const github = getOauthClient(callbackUrl);
 
 	if (!code) {
-		return NextResponse.json("missing_code");
+		return Response.json({ error: "missing_code" }, { status: 400 });
 	}
 
 	try {
-		// Validate the authorization code and get tokens
 		const tokens = await github.validateAuthorizationCode(code);
 		const accessToken = tokens.accessToken();
-
 		const user = await whoami(accessToken);
 
-		// Allow any GitHub user to authenticate
-
-		// Set a cookie for authentication
 		const session = await getSession();
 		session.githubUsername = user.login;
 		await session.save();
 
-		// Redirect to the original page or home
 		const redirectUrl = nextUrl ? decodeURIComponent(nextUrl) : "/";
-		return NextResponse.redirect(new URL(redirectUrl, request.url));
+		return Response.redirect(new URL(redirectUrl, request.url).toString(), 302);
 	} catch (error) {
-		return NextResponse.json(
+		return Response.json(
 			{
 				error: error instanceof Error ? error.message : String(error),
-				stack: error instanceof Error ? error.stack : undefined,
 				callbackUrl,
 			},
 			{ status: 500 },
