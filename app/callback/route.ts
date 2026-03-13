@@ -34,6 +34,13 @@ export async function GET(request: NextRequest) {
 		const redirectUrl = nextUrl ? decodeURIComponent(nextUrl) : "/";
 		return NextResponse.redirect(new URL(redirectUrl, request.url));
 	} catch (error) {
-		return NextResponse.json(error);
+		return NextResponse.json(
+			{
+				error: error instanceof Error ? error.message : String(error),
+				stack: error instanceof Error ? error.stack : undefined,
+				callbackUrl,
+			},
+			{ status: 500 },
+		);
 	}
 }
